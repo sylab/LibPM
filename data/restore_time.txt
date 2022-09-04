@@ -1,0 +1,307 @@
+vm.max_map_count = 1048576
+This test will create 8192 nodes...
+ope_type: softpm_create_list num_nodes: 8192 datasize: 2048 time: 0.084 seconds
+starting restore
+restore finished
+ope_type: softpm_restore_list num_nodes: 0 datasize: 2048 time: 0.027 seconds
+This test will create 8192 nodes...
+ope_type: softpm_create_list num_nodes: 8192 datasize: 2048 time: 0.079 seconds
+starting restore
+restore finished
+ope_type: softpm_restore_list num_nodes: 0 datasize: 2048 time: 0.028 seconds
+This test will create 8192 nodes...
+ope_type: softpm_create_list num_nodes: 8192 datasize: 2048 time: 0.078 seconds
+starting restore
+restore finished
+ope_type: softpm_restore_list num_nodes: 0 datasize: 2048 time: 0.026 seconds
+This test will create 8192 nodes...
+ope_type: softpm_create_list num_nodes: 8192 datasize: 2048 time: 0.079 seconds
+starting restore
+restore finished
+ope_type: softpm_restore_list num_nodes: 0 datasize: 2048 time: 0.027 seconds
+This test will create 8192 nodes...
+ope_type: softpm_create_list num_nodes: 8192 datasize: 2048 time: 0.079 seconds
+starting restore
+restore finished
+ope_type: softpm_restore_list num_nodes: 0 datasize: 2048 time: 0.026 seconds
+This test will create 8192 nodes...
+ope_type: softpm_create_list num_nodes: 8192 datasize: 2048 time: 0.079 seconds
+starting restore
+restore finished
+ope_type: softpm_restore_list num_nodes: 0 datasize: 2048 time: 0.029 seconds
+This test will create 8192 nodes...
+ope_type: softpm_create_list num_nodes: 8192 datasize: 2048 time: 0.078 seconds
+starting restore
+restore finished
+ope_type: softpm_restore_list num_nodes: 0 datasize: 2048 time: 0.026 seconds
+This test will create 8192 nodes...
+ope_type: softpm_create_list num_nodes: 8192 datasize: 2048 time: 0.079 seconds
+starting restore
+restore finished
+ope_type: softpm_restore_list num_nodes: 0 datasize: 2048 time: 0.027 seconds
+This test will create 8192 nodes...
+ope_type: softpm_create_list num_nodes: 8192 datasize: 2048 time: 0.079 seconds
+starting restore
+restore finished
+ope_type: softpm_restore_list num_nodes: 0 datasize: 2048 time: 0.028 seconds
+This test will create 8192 nodes...
+ope_type: softpm_create_list num_nodes: 8192 datasize: 2048 time: 0.078 seconds
+starting restore
+restore finished
+ope_type: softpm_restore_list num_nodes: 0 datasize: 2048 time: 0.028 seconds
+-rw-r--r-x 1 root root 67108864 Dec  4 15:31 /mnt/pmfs/container0
+This test will create 16384 nodes...
+ope_type: softpm_create_list num_nodes: 16384 datasize: 2048 time: 0.157 seconds
+starting restore
+restore finished
+ope_type: softpm_restore_list num_nodes: 0 datasize: 2048 time: 0.060 seconds
+This test will create 16384 nodes...
+ope_type: softpm_create_list num_nodes: 16384 datasize: 2048 time: 0.158 seconds
+starting restore
+restore finished
+ope_type: softpm_restore_list num_nodes: 0 datasize: 2048 time: 0.059 seconds
+This test will create 16384 nodes...
+ope_type: softpm_create_list num_nodes: 16384 datasize: 2048 time: 0.157 seconds
+starting restore
+restore finished
+ope_type: softpm_restore_list num_nodes: 0 datasize: 2048 time: 0.059 seconds
+This test will create 16384 nodes...
+ope_type: softpm_create_list num_nodes: 16384 datasize: 2048 time: 0.202 seconds
+starting restore
+restore finished
+ope_type: softpm_restore_list num_nodes: 0 datasize: 2048 time: 0.059 seconds
+This test will create 16384 nodes...
+ope_type: softpm_create_list num_nodes: 16384 datasize: 2048 time: 0.158 seconds
+starting restore
+restore finished
+ope_type: softpm_restore_list num_nodes: 0 datasize: 2048 time: 0.059 seconds
+This test will create 16384 nodes...
+ope_type: softpm_create_list num_nodes: 16384 datasize: 2048 time: 0.155 seconds
+starting restore
+restore finished
+ope_type: softpm_restore_list num_nodes: 0 datasize: 2048 time: 0.058 seconds
+This test will create 16384 nodes...
+ope_type: softpm_create_list num_nodes: 16384 datasize: 2048 time: 0.157 seconds
+starting restore
+restore finished
+ope_type: softpm_restore_list num_nodes: 0 datasize: 2048 time: 0.060 seconds
+This test will create 16384 nodes...
+ope_type: softpm_create_list num_nodes: 16384 datasize: 2048 time: 0.153 seconds
+starting restore
+restore finished
+ope_type: softpm_restore_list num_nodes: 0 datasize: 2048 time: 0.064 seconds
+This test will create 16384 nodes...
+ope_type: softpm_create_list num_nodes: 16384 datasize: 2048 time: 0.154 seconds
+starting restore
+restore finished
+ope_type: softpm_restore_list num_nodes: 0 datasize: 2048 time: 0.059 seconds
+This test will create 16384 nodes...
+ope_type: softpm_create_list num_nodes: 16384 datasize: 2048 time: 0.158 seconds
+starting restore
+restore finished
+ope_type: softpm_restore_list num_nodes: 0 datasize: 2048 time: 0.059 seconds
+-rw-r--r-x 1 root root 134217728 Dec  4 15:31 /mnt/pmfs/container0
+This test will create 32768 nodes...
+ope_type: softpm_create_list num_nodes: 32768 datasize: 2048 time: 0.316 seconds
+starting restore
+restore finished
+ope_type: softpm_restore_list num_nodes: 0 datasize: 2048 time: 0.127 seconds
+This test will create 32768 nodes...
+ope_type: softpm_create_list num_nodes: 32768 datasize: 2048 time: 0.310 seconds
+starting restore
+restore finished
+ope_type: softpm_restore_list num_nodes: 0 datasize: 2048 time: 0.130 seconds
+This test will create 32768 nodes...
+ope_type: softpm_create_list num_nodes: 32768 datasize: 2048 time: 0.310 seconds
+starting restore
+restore finished
+ope_type: softpm_restore_list num_nodes: 0 datasize: 2048 time: 0.126 seconds
+This test will create 32768 nodes...
+ope_type: softpm_create_list num_nodes: 32768 datasize: 2048 time: 0.314 seconds
+starting restore
+restore finished
+ope_type: softpm_restore_list num_nodes: 0 datasize: 2048 time: 0.132 seconds
+This test will create 32768 nodes...
+ope_type: softpm_create_list num_nodes: 32768 datasize: 2048 time: 0.313 seconds
+starting restore
+restore finished
+ope_type: softpm_restore_list num_nodes: 0 datasize: 2048 time: 0.125 seconds
+This test will create 32768 nodes...
+ope_type: softpm_create_list num_nodes: 32768 datasize: 2048 time: 0.310 seconds
+starting restore
+restore finished
+ope_type: softpm_restore_list num_nodes: 0 datasize: 2048 time: 0.127 seconds
+This test will create 32768 nodes...
+ope_type: softpm_create_list num_nodes: 32768 datasize: 2048 time: 0.373 seconds
+starting restore
+restore finished
+ope_type: softpm_restore_list num_nodes: 0 datasize: 2048 time: 0.124 seconds
+This test will create 32768 nodes...
+ope_type: softpm_create_list num_nodes: 32768 datasize: 2048 time: 0.322 seconds
+starting restore
+restore finished
+ope_type: softpm_restore_list num_nodes: 0 datasize: 2048 time: 0.124 seconds
+This test will create 32768 nodes...
+ope_type: softpm_create_list num_nodes: 32768 datasize: 2048 time: 0.319 seconds
+starting restore
+restore finished
+ope_type: softpm_restore_list num_nodes: 0 datasize: 2048 time: 0.127 seconds
+This test will create 32768 nodes...
+ope_type: softpm_create_list num_nodes: 32768 datasize: 2048 time: 0.318 seconds
+starting restore
+restore finished
+ope_type: softpm_restore_list num_nodes: 0 datasize: 2048 time: 0.124 seconds
+-rw-r--r-x 1 root root 268435456 Dec  4 15:31 /mnt/pmfs/container0
+This test will create 65536 nodes...
+ope_type: softpm_create_list num_nodes: 65536 datasize: 2048 time: 0.692 seconds
+starting restore
+restore finished
+ope_type: softpm_restore_list num_nodes: 0 datasize: 2048 time: 0.262 seconds
+This test will create 65536 nodes...
+ope_type: softpm_create_list num_nodes: 65536 datasize: 2048 time: 0.637 seconds
+starting restore
+restore finished
+ope_type: softpm_restore_list num_nodes: 0 datasize: 2048 time: 0.257 seconds
+This test will create 65536 nodes...
+ope_type: softpm_create_list num_nodes: 65536 datasize: 2048 time: 0.632 seconds
+starting restore
+restore finished
+ope_type: softpm_restore_list num_nodes: 0 datasize: 2048 time: 0.255 seconds
+This test will create 65536 nodes...
+ope_type: softpm_create_list num_nodes: 65536 datasize: 2048 time: 0.635 seconds
+starting restore
+restore finished
+ope_type: softpm_restore_list num_nodes: 0 datasize: 2048 time: 0.261 seconds
+This test will create 65536 nodes...
+ope_type: softpm_create_list num_nodes: 65536 datasize: 2048 time: 0.641 seconds
+starting restore
+restore finished
+ope_type: softpm_restore_list num_nodes: 0 datasize: 2048 time: 0.253 seconds
+This test will create 65536 nodes...
+ope_type: softpm_create_list num_nodes: 65536 datasize: 2048 time: 0.630 seconds
+starting restore
+restore finished
+ope_type: softpm_restore_list num_nodes: 0 datasize: 2048 time: 0.260 seconds
+This test will create 65536 nodes...
+ope_type: softpm_create_list num_nodes: 65536 datasize: 2048 time: 0.647 seconds
+starting restore
+restore finished
+ope_type: softpm_restore_list num_nodes: 0 datasize: 2048 time: 0.252 seconds
+This test will create 65536 nodes...
+ope_type: softpm_create_list num_nodes: 65536 datasize: 2048 time: 0.629 seconds
+starting restore
+restore finished
+ope_type: softpm_restore_list num_nodes: 0 datasize: 2048 time: 0.251 seconds
+This test will create 65536 nodes...
+ope_type: softpm_create_list num_nodes: 65536 datasize: 2048 time: 0.673 seconds
+starting restore
+restore finished
+ope_type: softpm_restore_list num_nodes: 0 datasize: 2048 time: 0.254 seconds
+This test will create 65536 nodes...
+ope_type: softpm_create_list num_nodes: 65536 datasize: 2048 time: 0.619 seconds
+starting restore
+restore finished
+ope_type: softpm_restore_list num_nodes: 0 datasize: 2048 time: 0.253 seconds
+-rw-r--r-x 1 root root 536870912 Dec  4 15:32 /mnt/pmfs/container0
+This test will create 131072 nodes...
+ope_type: softpm_create_list num_nodes: 131072 datasize: 2048 time: 1.421 seconds
+starting restore
+restore finished
+ope_type: softpm_restore_list num_nodes: 0 datasize: 2048 time: 0.525 seconds
+This test will create 131072 nodes...
+ope_type: softpm_create_list num_nodes: 131072 datasize: 2048 time: 1.320 seconds
+starting restore
+restore finished
+ope_type: softpm_restore_list num_nodes: 0 datasize: 2048 time: 0.538 seconds
+This test will create 131072 nodes...
+ope_type: softpm_create_list num_nodes: 131072 datasize: 2048 time: 1.304 seconds
+starting restore
+restore finished
+ope_type: softpm_restore_list num_nodes: 0 datasize: 2048 time: 0.538 seconds
+This test will create 131072 nodes...
+ope_type: softpm_create_list num_nodes: 131072 datasize: 2048 time: 1.320 seconds
+starting restore
+restore finished
+ope_type: softpm_restore_list num_nodes: 0 datasize: 2048 time: 0.543 seconds
+This test will create 131072 nodes...
+ope_type: softpm_create_list num_nodes: 131072 datasize: 2048 time: 1.433 seconds
+starting restore
+restore finished
+ope_type: softpm_restore_list num_nodes: 0 datasize: 2048 time: 0.541 seconds
+This test will create 131072 nodes...
+ope_type: softpm_create_list num_nodes: 131072 datasize: 2048 time: 1.330 seconds
+starting restore
+restore finished
+ope_type: softpm_restore_list num_nodes: 0 datasize: 2048 time: 0.553 seconds
+This test will create 131072 nodes...
+ope_type: softpm_create_list num_nodes: 131072 datasize: 2048 time: 1.335 seconds
+starting restore
+restore finished
+ope_type: softpm_restore_list num_nodes: 0 datasize: 2048 time: 0.527 seconds
+This test will create 131072 nodes...
+ope_type: softpm_create_list num_nodes: 131072 datasize: 2048 time: 1.322 seconds
+starting restore
+restore finished
+ope_type: softpm_restore_list num_nodes: 0 datasize: 2048 time: 0.533 seconds
+This test will create 131072 nodes...
+ope_type: softpm_create_list num_nodes: 131072 datasize: 2048 time: 1.531 seconds
+starting restore
+restore finished
+ope_type: softpm_restore_list num_nodes: 0 datasize: 2048 time: 0.522 seconds
+This test will create 131072 nodes...
+ope_type: softpm_create_list num_nodes: 131072 datasize: 2048 time: 1.259 seconds
+starting restore
+restore finished
+ope_type: softpm_restore_list num_nodes: 0 datasize: 2048 time: 0.527 seconds
+-rw-r--r-x 1 root root 1073741824 Dec  4 15:32 /mnt/pmfs/container0
+This test will create 262144 nodes...
+ope_type: softpm_create_list num_nodes: 262144 datasize: 2048 time: 3.668 seconds
+starting restore
+restore finished
+ope_type: softpm_restore_list num_nodes: 0 datasize: 2048 time: 1.106 seconds
+This test will create 262144 nodes...
+ope_type: softpm_create_list num_nodes: 262144 datasize: 2048 time: 2.982 seconds
+starting restore
+restore finished
+ope_type: softpm_restore_list num_nodes: 0 datasize: 2048 time: 1.099 seconds
+This test will create 262144 nodes...
+ope_type: softpm_create_list num_nodes: 262144 datasize: 2048 time: 2.612 seconds
+starting restore
+restore finished
+ope_type: softpm_restore_list num_nodes: 0 datasize: 2048 time: 1.127 seconds
+This test will create 262144 nodes...
+ope_type: softpm_create_list num_nodes: 262144 datasize: 2048 time: 2.600 seconds
+starting restore
+restore finished
+ope_type: softpm_restore_list num_nodes: 0 datasize: 2048 time: 1.113 seconds
+This test will create 262144 nodes...
+ope_type: softpm_create_list num_nodes: 262144 datasize: 2048 time: 2.673 seconds
+starting restore
+restore finished
+ope_type: softpm_restore_list num_nodes: 0 datasize: 2048 time: 1.114 seconds
+This test will create 262144 nodes...
+ope_type: softpm_create_list num_nodes: 262144 datasize: 2048 time: 2.567 seconds
+starting restore
+restore finished
+ope_type: softpm_restore_list num_nodes: 0 datasize: 2048 time: 1.181 seconds
+This test will create 262144 nodes...
+ope_type: softpm_create_list num_nodes: 262144 datasize: 2048 time: 2.615 seconds
+starting restore
+restore finished
+ope_type: softpm_restore_list num_nodes: 0 datasize: 2048 time: 1.028 seconds
+This test will create 262144 nodes...
+ope_type: softpm_create_list num_nodes: 262144 datasize: 2048 time: 2.325 seconds
+starting restore
+restore finished
+ope_type: softpm_restore_list num_nodes: 0 datasize: 2048 time: 1.034 seconds
+This test will create 262144 nodes...
+ope_type: softpm_create_list num_nodes: 262144 datasize: 2048 time: 2.332 seconds
+starting restore
+restore finished
+ope_type: softpm_restore_list num_nodes: 0 datasize: 2048 time: 1.031 seconds
+This test will create 262144 nodes...
+ope_type: softpm_create_list num_nodes: 262144 datasize: 2048 time: 2.354 seconds
+starting restore
+restore finished
+ope_type: softpm_restore_list num_nodes: 0 datasize: 2048 time: 1.046 seconds
+-rw-r--r-x 1 root root 2147483648 Dec  4 15:33 /mnt/pmfs/container0

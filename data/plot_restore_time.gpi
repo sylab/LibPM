@@ -1,0 +1,20 @@
+#!/usr/bin/env gnuplot
+
+set terminal postscript eps enhanced color font 'Helvetica,22'
+set output 'restore_time.eps'
+
+#set terminal svg size 350,262 fname 'Verdana' fsize 10
+#set output 'restore_time.svg'
+
+#set title "restore time"
+set logscale x 2 
+#set logscale y2 2 
+set ylabel "Restore time (seconds)"
+set xlabel "Data size (MB)"
+
+unset key 
+
+#set ytics axis
+#set y2tics 
+plot "restore_time_clean.txt" using 1:2 with lines linewidth 8 lc rgb '#A9A9A9', \
+    "" using 1:3 with lines linewidth 8 lc rgb 'blue'

@@ -1,0 +1,2312 @@
+%!PS-Adobe-2.0 EPSF-2.0
+%%Creator: Box::print() by Christian Lindig
+%%BoundingBox: 42 35 552 415
+%%Pages: 1
+%%EndComments
+
+gsave
+36 423 translate
+0.25941 -0.25941 scale
+% $Id$
+% Header for DDD PostScript Box output
+
+% Copyright (C) 1995-1998 Technische Universitaet Braunschweig, Germany.
+% Written by Christian Lindig <lindig@ips.cs.tu-bs.de>.
+% 
+% This file is part of DDD.
+% 
+% DDD is free software; you can redistribute it and/or
+% modify it under the terms of the GNU General Public
+% License as published by the Free Software Foundation; either
+% version 3 of the License, or (at your option) any later version.
+% 
+% DDD is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+% See the GNU General Public License for more details.
+% 
+% You should have received a copy of the GNU General Public
+% License along with DDD -- see the file COPYING.
+% If not, see <http://www.gnu.org/licenses/>.
+% 
+% DDD is the data display debugger.
+% For details, see the DDD World-Wide-Web page, 
+% `http://www.gnu.org/software/ddd/',
+% or send a mail to the DDD developers <ddd@gnu.org>.
+
+% Make all definitions local to the ddddict dictionary
+/ddddict 25 dict def 
+
+ddddict begin		% make dict active 
+
+
+% Global variables
+/fontSize+ 12 def
+/font+ /Courier def  
+
+
+% Some small utilities
+/cm { 28.34646 mul } bind def
+
+
+% ISOLATIN1* - reencode a font to ISO Latin 1 encoding
+%
+% newfont table oldfont isolatin1*
+
+/isolatin1* {
+	findfont
+	dup maxlength dict begin
+	{
+		1 index /FID ne { def } { pop pop } ifelse
+	} forall
+	/Encoding exch def
+	dup /FontName exch def
+	currentdict end definefont pop
+} bind def
+
+
+% Define the ISO Latin 1 encoding of a font
+ 
+/isotable[
+/.notdef/.notdef/.notdef/.notdef/.notdef/.notdef/.notdef/.notdef/.notdef
+/.notdef/.notdef/.notdef/.notdef/.notdef/.notdef/.notdef/.notdef/.notdef
+/.notdef/.notdef/.notdef/.notdef/.notdef/.notdef/.notdef/.notdef/.notdef
+/.notdef/.notdef/.notdef/.notdef/.notdef/space/exclam/quotedbl/numbersign
+/dollar/percent/ampersand/quoteright/parenleft/parenright/asterisk/plus/comma
+/hyphen/period/slash/zero/one/two/three/four/five/six/seven/eight/nine/colon
+/semicolon/less/equal/greater/question/at/A/B/C/D/E/F/G/H/I/J/K/L/M/N/O/P/Q/R/S
+/T/U/V/W/X/Y/Z/bracketleft/backslash/bracketright/asciicircum/underscore
+/quoteleft/a/b/c/d/e/f/g/h/i/j/k/l/m/n/o/p/q/r/s/t/u/v/w/x/y/z/braceleft/bar
+/braceright/asciitilde/.notdef/.notdef/.notdef/.notdef/.notdef/.notdef/.notdef
+/.notdef/.notdef/.notdef/.notdef/.notdef/.notdef/.notdef/.notdef/.notdef
+/.notdef/dotlessi/grave/acute/circumflex/tilde/macron/breve/dotaccent/dieresis
+/.notdef/ring/cedilla/.notdef/hungarumlaut/ogonek/caron/.notdef/exclamdown/cent
+/sterling/currency/yen/brokenbar/section/dieresis/copyright/ordfeminine
+/guilsinglleft/logicalnot/hyphen/registered/macron/degree/plusminus/twosuperior
+/threesuperior/acute/mu/paragraph/periodcentered/cedilla/onesuperior
+/ordmasculine/guilsinglright/onequarter/onehalf/threequarters/questiondown
+/Agrave/Aacute/Acircumflex/Atilde/Adieresis/Aring/AE/Ccedilla/Egrave/Eacute
+/Ecircumflex/Edieresis/Igrave/Iacute/Icircumflex/Idieresis/Eth/Ntilde/Ograve
+/Oacute/Ocircumflex/Otilde/Odieresis/multiply/Oslash/Ugrave/Uacute/Ucircumflex
+/Udieresis/Yacute/Thorn/germandbls/agrave/aacute/acircumflex/atilde/adieresis
+/aring/ae/ccedilla/egrave/eacute/ecircumflex/edieresis/igrave/iacute
+/icircumflex/idieresis/eth/ntilde/ograve/oacute/ocircumflex/otilde/odieresis
+/divide/oslash/ugrave/uacute/ucircumflex/udieresis/yacute/thorn/ydieresis
+] def
+
+
+% YCORRECT*
+% The reference point of a string ist NOT its lower left corner but 
+% its baseline.  Therefore, the y coordinate must be corrected.  
+% Returns the correction for the current font.
+%
+% ycorrect* y
+
+/ycorrect* {
+	currentfont /FontBBox get
+	aload pop pop pop
+	currentfont /FontMatrix get dtransform
+	exch pop
+} def 
+
+
+% TEXT*
+% print out a string and make sure not to require more space than
+% specified.
+% font xsize ysize xorigin yorigin (string) text*
+
+/text* {
+
+	/string+ exch def		% set up some variables ..
+	moveto				% move to (xorigin,yorigin)
+	/ysize+ exch def
+	/xsize+ exch def
+	/thefont+ exch def
+
+	% is the right font already selected ?
+
+	thefont+ font+ ne 
+	ysize+ fontSize+ ne
+	or {	
+		% set up the right font - reencode it	
+		
+		/Symbol thefont+ eq 
+		{
+			thefont+ findfont
+		}{
+
+			/isofont+ isotable thefont+ isolatin1*	
+			/isofont+ findfont
+		}ifelse
+
+		[ysize+ 0 0 ysize+ neg 0 0] makefont
+		setfont
+		
+		/font+ thefont+ def
+		/fontSize+ ysize+ def
+	} if
+
+	% correct current point 
+
+	0 ycorrect* neg rmoveto
+
+	% string too long?  Scale it down ...
+	% The actual font is scaled. There is a good chance,
+	% that this will not happen too often when the font is not
+	% changed during the calls of text*
+
+	xsize+ string+ stringwidth pop div dup dup
+	1 lt {
+		0 0 1 0 0 6 array astore currentfont exch 
+		makefont setfont
+		pop
+	}{ 
+		% string is too short ... scale it up
+
+		1.05 gt {
+			0 0 1 0 0 6 array astore currentfont exch 
+			makefont setfont	
+		}{
+			pop
+
+		} ifelse
+	} ifelse
+	
+	string+ show
+
+} bind def
+
+	
+% ARROWLINE*
+% Draw a line of given width with an arrow at its end
+% len gives the height of the triangle forming the head of the arrow
+% and angle the angle at its top
+%	
+% angle len  x1 y1 x2 y2 linewidth arrowline*
+
+/arrowline* {
+	setlinewidth			% angle len x1 y1 x2 y2
+	/y2 exch def
+	/x2 exch def
+	/y1 exch def
+	/x1 exch def
+	/len+ exch def			% height of triangle
+
+	/alpha+ 
+		y2 y1 sub		% define alpha+
+		x2 x1 sub
+		atan
+	def
+
+	/base+				% define half of baseline
+		exch 
+		2 div dup		% angle angle
+		sin exch cos 	 	% sin(angle) cos(angle)
+		div			% tan(angle)
+		len+
+		mul			% half of baseline
+	def  
+	
+	newpath				% draw the line
+	x1 y1 moveto 
+	x2 len+ alpha+ cos mul sub 	% shorten the line to the end  
+	y2 len+ alpha+ sin mul sub 	% of the triangle
+	lineto
+	stroke		
+
+	gsave				% set the origin to the head of
+	0 setlinewidth			% the arrow and rotate the system
+	x2 y2 
+	translate			% origin now at x2 y2
+
+	alpha+ 90 sub rotate 		% rotate the system
+
+	newpath				% draw a triangle
+	0 0 moveto
+	base+ len+ neg rlineto
+	base+ 2 mul neg 0 rlineto
+	closepath
+	fill
+	
+	grestore
+} bind def
+
+% ARROWHEAD*
+% draw an arrow head inclined by alpha at (x,y)
+%
+% angle len alpha x y
+
+/arrowhead* {
+	/y exch def
+	/x exch def
+	/alpha+ exch def
+	/len+ exch def			% height of triangle
+
+	/base+				% define half of baseline
+		exch 
+		2 div dup		% angle angle
+		sin exch cos 	 	% sin(angle) cos(angle)
+		div			% tan(angle)
+		len+
+		mul			% half of baseline
+	def
+
+	gsave				% set the origin to the head of
+	0 setlinewidth			% the arrow and rotate the system
+	x y 
+	translate			% origin now at x y
+
+	alpha+ 90 sub rotate 		% rotate the system
+
+	newpath				% draw a triangle
+	0 0 moveto
+	base+ len+ neg rlineto
+	base+ 2 mul neg 0 rlineto
+	closepath
+	fill
+	
+	grestore
+} bind def
+
+
+% LINE*
+% draw a line of given width from (x1,y1) to (x2,y2)
+%
+% x1 y1 x2 y2 width line*
+
+/line* {
+	setlinewidth	% x1 y1 x2 y2
+	newpath
+	4 2 roll 	% x2 y2 x1 y1
+	moveto		% x2 y2
+	lineto		
+	stroke
+} bind def
+
+
+% CLEAN*
+%
+% fill a box given by four points with white colour ..
+% x1 y1 x2 y2 x3 y3 x4 y4 clean*
+
+/clean* {
+	gsave
+	1 setgray
+	0 setlinewidth
+	newpath
+	moveto  lineto  lineto lineto
+	closepath
+	fill
+	grestore
+} bind def
+
+
+% BOX*
+% fill a box given by four points
+%
+% x1 y1 x2 y2 x3 y3 x4 y4 box*
+
+/box* {
+	0 setlinewidth
+	newpath
+	moveto 	lineto 	lineto lineto
+	closepath
+	fill
+} bind def
+
+
+% ARC*
+% draw an ellipse with center (cx,cy), radius dx dy, starting at start
+% and ending at end.
+%
+% start end dx dy cx cy width arc*
+
+/arc* {
+	gsave
+	setlinewidth
+	translate
+	newpath
+	dup 3 1 roll		% start end dy dx dy
+	div 1 scale		% dy dx/dy 1 scale => start end dy
+	
+	0 exch  0 exch		% start end 0 0 dy 
+	5 -2 roll 		% 0 0 dy start end
+
+	dup
+	0 eq {			% replace 0 by 360
+		pop 
+		360
+	} if
+	arc
+	stroke
+	grestore
+} bind def
+
+
+% BEGINCOLOR* / ENDCOLOR*
+% Draw something using a specific foreground color
+%
+% red green blue begincolor* SOMETHING endcolor*
+
+/begincolor* {
+        currentrgbcolor         % red green blue red' green' blue'
+        6 3 roll                % red' green' blue' red green blue
+	setrgbcolor             % red' green' blue'
+} bind def
+
+/endcolor* {
+	setrgbcolor
+} bind def
+
+
+% Set up the right font to the right size
+
+/isofont+ isotable font+ isolatin1* 	% reencode font+
+					% and make it the current font
+/isofont+ findfont
+[fontSize+ 0 0 fontSize+ neg 0 0] makefont
+setfont
+
+
+%%EndProlog
+0 0 0.545098 begincolor*
+30 10 95 66 118 93 1 arrowline*
+/Helvetica-Narrow 10 13 101 77 (*\(\)) text*
+30 10 178 195 190 227 1 arrowline*
+/Helvetica-Narrow 99 13 135 209 (*\(\(\).current_slab.maddr\)) text*
+30 10 390 399 486 420 1 arrowline*
+30 10 762 453 886 459 1 arrowline*
+30 10 1162 409 1466 287 1 arrowline*
+30 10 1162 490 1498 555 1 arrowline*
+30 10 762 515 1046 653 1 arrowline*
+30 10 1322 777 1562 878 1 arrowline*
+1322 776 1536 864 1 line*
+30 10 1536 864 1562 876 1 arrowline*
+30 10 1280 816 1625 1161 1 arrowline*
+30 10 344 509 537 768 1 arrowline*
+30 10 675 960 733 1040 1 arrowline*
+30 10 938 1173 1018 1195 1 arrowline*
+endcolor*
+0 0 0 begincolor*
+29 30 132 30 132 66 29 66 clean*
+0 0 0 begincolor* % black
+29 30 131 30 131 31 29 31 box* %(29, 30)(102, 1)
+29 31 30 31 30 64 29 64 box* %(29, 31)(1, 33)
+0 0 0 begincolor* % black
+/Courier 6 13 32 46 (1) text*
+/Courier 12 13 38 46 (: ) text*
+/Courier-BoldOblique 78 13 50 46 (CONTAINERS[0]) text*
+endcolor*
+32 46 128 46 128 47 32 47 box* %(32, 46)(96, 1)
+1 1 1 begincolor* % white
+0.498039 0.498039 0.498039 begincolor* % grey50
+32 49 128 49 128 62 32 62 box* %(32, 49)(96, 13)
+endcolor*
+/Courier 60 13 32 62 (\(Disabled\)) text*
+endcolor*
+130 31 131 31 131 64 130 64 box* %(130, 31)(1, 33)
+29 64 131 64 131 65 29 65 box* %(29, 64)(102, 1)
+endcolor*
+0.745098 0.745098 0.745098 begincolor* % grey
+131 31 132 31 132 65 131 65 box* %(131, 31)(1, 34)
+endcolor*
+0.745098 0.745098 0.745098 begincolor* % grey
+30 65 132 65 132 66 30 66 box* %(30, 65)(102, 1)
+endcolor*
+662 1040 939 1040 939 1232 662 1232 clean*
+0 0 0 begincolor* % black
+662 1040 938 1040 938 1041 662 1041 box* %(662, 1040)(276, 1)
+662 1041 663 1041 663 1230 662 1230 box* %(662, 1041)(1, 189)
+0 0 0 begincolor* % black
+/Courier 12 13 665 1056 (16) text*
+/Courier 12 13 677 1056 (: ) text*
+/Courier-BoldOblique 120 13 689 1056 (*\(\(\(\(CONT...].maddr\)) text*
+endcolor*
+665 1056 935 1056 935 1057 665 1057 box* %(665, 1056)(270, 1)
+0 0 0 begincolor* % black
+665 1059 935 1059 935 1060 665 1060 box* %(665, 1059)(270, 1)
+665 1060 666 1060 666 1227 665 1227 box* %(665, 1060)(1, 167)
+/Courier 48 13 680 1075 (si_index) text*
+/Courier 18 13 746 1075 ( = ) text*
+0 0 0 begincolor* % black
+/Courier 6 13 764 1075 (1) text*
+endcolor*
+/Courier 60 13 680 1119 (si_current) text*
+/Courier 18 13 746 1119 ( = ) text*
+0 0 0.545098 begincolor* % blue4
+764 1075 932 1075 932 1076 764 1076 box* %(764, 1075)(168, 1)
+764 1076 765 1076 765 1149 764 1149 box* %(764, 1076)(1, 73)
+0 0 0 begincolor* % black
+779 1078 929 1078 929 1079 779 1079 box* %(779, 1078)(150, 1)
+779 1079 780 1079 780 1109 779 1109 box* %(779, 1079)(1, 30)
+/Courier 30 13 794 1094 (maddr) text*
+/Courier 18 13 824 1094 ( = ) text*
+0 0 0.545098 begincolor* % blue4
+/Courier 84 13 842 1094 (0x7ffff7fe5000) text*
+endcolor*
+/Courier 30 13 794 1107 (laddr) text*
+/Courier 18 13 824 1107 ( = ) text*
+0 0 0 begincolor* % black
+/Courier 30 13 842 1107 (73728) text*
+endcolor*
+928 1079 929 1079 929 1109 928 1109 box* %(928, 1079)(1, 30)
+779 1109 929 1109 929 1110 779 1110 box* %(779, 1109)(150, 1)
+endcolor*
+779 1112 929 1112 929 1113 779 1113 box* %(779, 1112)(150, 1)
+0 0 0 begincolor* % black
+779 1115 929 1115 929 1116 779 1116 box* %(779, 1115)(150, 1)
+779 1116 780 1116 780 1146 779 1146 box* %(779, 1116)(1, 30)
+/Courier 30 13 794 1131 (maddr) text*
+/Courier 18 13 824 1131 ( = ) text*
+0 0 0.545098 begincolor* % blue4
+1 0 0 begincolor* % red
+/Courier 18 13 842 1131 (0x0) text*
+endcolor*
+endcolor*
+/Courier 30 13 794 1144 (laddr) text*
+/Courier 18 13 824 1144 ( = ) text*
+0 0 0 begincolor* % black
+/Courier 6 13 842 1144 (0) text*
+endcolor*
+928 1116 929 1116 929 1146 928 1146 box* %(928, 1116)(1, 30)
+779 1146 929 1146 929 1147 779 1147 box* %(779, 1146)(150, 1)
+endcolor*
+931 1076 932 1076 932 1149 931 1149 box* %(931, 1076)(1, 73)
+764 1149 932 1149 932 1150 764 1150 box* %(764, 1149)(168, 1)
+endcolor*
+/Courier 66 13 680 1194 (si_snapshot) text*
+/Courier 18 13 746 1194 ( = ) text*
+0 0 0.545098 begincolor* % blue4
+764 1150 932 1150 932 1151 764 1151 box* %(764, 1150)(168, 1)
+764 1151 765 1151 765 1224 764 1224 box* %(764, 1151)(1, 73)
+0 0 0 begincolor* % black
+779 1153 929 1153 929 1154 779 1154 box* %(779, 1153)(150, 1)
+779 1154 780 1154 780 1184 779 1184 box* %(779, 1154)(1, 30)
+/Courier 30 13 794 1169 (maddr) text*
+/Courier 18 13 824 1169 ( = ) text*
+0 0 0.545098 begincolor* % blue4
+1 0 0 begincolor* % red
+/Courier 18 13 842 1169 (0x0) text*
+endcolor*
+endcolor*
+/Courier 30 13 794 1182 (laddr) text*
+/Courier 18 13 824 1182 ( = ) text*
+0 0 0 begincolor* % black
+/Courier 6 13 842 1182 (0) text*
+endcolor*
+928 1154 929 1154 929 1184 928 1184 box* %(928, 1154)(1, 30)
+779 1184 929 1184 929 1185 779 1185 box* %(779, 1184)(150, 1)
+endcolor*
+779 1187 929 1187 929 1188 779 1188 box* %(779, 1187)(150, 1)
+0 0 0 begincolor* % black
+779 1190 929 1190 929 1191 779 1191 box* %(779, 1190)(150, 1)
+779 1191 780 1191 780 1221 779 1221 box* %(779, 1191)(1, 30)
+/Courier 30 13 794 1206 (maddr) text*
+/Courier 18 13 824 1206 ( = ) text*
+0 0 0.545098 begincolor* % blue4
+1 0 0 begincolor* % red
+/Courier 18 13 842 1206 (0x0) text*
+endcolor*
+endcolor*
+/Courier 30 13 794 1219 (laddr) text*
+/Courier 18 13 824 1219 ( = ) text*
+0 0 0 begincolor* % black
+/Courier 6 13 842 1219 (0) text*
+endcolor*
+928 1191 929 1191 929 1221 928 1221 box* %(928, 1191)(1, 30)
+779 1221 929 1221 929 1222 779 1222 box* %(779, 1221)(150, 1)
+endcolor*
+931 1151 932 1151 932 1224 931 1224 box* %(931, 1151)(1, 73)
+764 1224 932 1224 932 1225 764 1225 box* %(764, 1224)(168, 1)
+endcolor*
+934 1060 935 1060 935 1227 934 1227 box* %(934, 1060)(1, 167)
+665 1227 935 1227 935 1228 665 1228 box* %(665, 1227)(270, 1)
+endcolor*
+937 1041 938 1041 938 1230 937 1230 box* %(937, 1041)(1, 189)
+662 1230 938 1230 938 1231 662 1231 box* %(662, 1230)(276, 1)
+endcolor*
+0.745098 0.745098 0.745098 begincolor* % grey
+938 1041 939 1041 939 1231 938 1231 box* %(938, 1041)(1, 190)
+endcolor*
+0.745098 0.745098 0.745098 begincolor* % grey
+663 1231 939 1231 939 1232 663 1232 box* %(663, 1231)(276, 1)
+endcolor*
+25 93 296 93 296 196 25 196 clean*
+0 0 0 begincolor* % black
+25 93 295 93 295 94 25 94 box* %(25, 93)(270, 1)
+25 94 26 94 26 194 25 194 box* %(25, 94)(1, 100)
+0 0 0 begincolor* % black
+28 96 292 96 292 97 28 97 box* %(28, 96)(264, 1)
+28 97 29 97 29 191 28 191 box* %(28, 97)(1, 94)
+/Courier 12 13 43 112 (id) text*
+/Courier 18 13 121 112 ( = ) text*
+0 0 0 begincolor* % black
+/Courier 6 13 139 112 (0) text*
+endcolor*
+/Courier 72 13 43 125 (pg_allocator) text*
+/Courier 18 13 121 125 ( = ) text*
+0 0 0.545098 begincolor* % blue4
+/Courier 48 13 139 125 (0x602050) text*
+endcolor*
+/Courier 72 13 43 147 (current_slab) text*
+/Courier 18 13 121 147 ( = ) text*
+0 0 0 begincolor* % black
+139 125 289 125 289 126 139 126 box* %(139, 125)(150, 1)
+139 126 140 126 140 156 139 156 box* %(139, 126)(1, 30)
+/Courier 30 13 154 141 (maddr) text*
+/Courier 18 13 184 141 ( = ) text*
+0 0 0.545098 begincolor* % blue4
+/Courier 84 13 202 141 (0x7ffff7ff8000) text*
+endcolor*
+/Courier 30 13 154 154 (laddr) text*
+/Courier 18 13 184 154 ( = ) text*
+0 0 0 begincolor* % black
+/Courier 6 13 202 154 (0) text*
+endcolor*
+288 126 289 126 289 156 288 156 box* %(288, 126)(1, 30)
+139 156 289 156 289 157 139 157 box* %(139, 156)(150, 1)
+endcolor*
+/Courier 78 13 43 179 (snapshot_slab) text*
+/Courier 18 13 121 179 ( = ) text*
+0 0 0 begincolor* % black
+139 157 289 157 289 158 139 158 box* %(139, 157)(150, 1)
+139 158 140 158 140 188 139 188 box* %(139, 158)(1, 30)
+/Courier 30 13 154 173 (maddr) text*
+/Courier 18 13 184 173 ( = ) text*
+0 0 0.545098 begincolor* % blue4
+/Courier 84 13 202 173 (0x7ffff7ff8000) text*
+endcolor*
+/Courier 30 13 154 186 (laddr) text*
+/Courier 18 13 184 186 ( = ) text*
+0 0 0 begincolor* % black
+/Courier 6 13 202 186 (0) text*
+endcolor*
+288 158 289 158 289 188 288 188 box* %(288, 158)(1, 30)
+139 188 289 188 289 189 139 189 box* %(139, 188)(150, 1)
+endcolor*
+291 97 292 97 292 191 291 191 box* %(291, 97)(1, 94)
+28 191 292 191 292 192 28 192 box* %(28, 191)(264, 1)
+endcolor*
+294 94 295 94 295 194 294 194 box* %(294, 94)(1, 100)
+25 194 295 194 295 195 25 195 box* %(25, 194)(270, 1)
+endcolor*
+0.745098 0.745098 0.745098 begincolor* % grey
+295 94 296 94 296 195 295 195 box* %(295, 94)(1, 101)
+endcolor*
+0.745098 0.745098 0.745098 begincolor* % grey
+26 195 296 195 296 196 26 196 box* %(26, 195)(270, 1)
+endcolor*
+90 227 391 227 391 510 90 510 clean*
+0 0 0 begincolor* % black
+90 227 390 227 390 228 90 228 box* %(90, 227)(300, 1)
+90 228 91 228 91 508 90 508 box* %(90, 228)(1, 280)
+0 0 0 begincolor* % black
+93 230 387 230 387 231 93 231 box* %(93, 230)(294, 1)
+93 231 94 231 94 505 93 505 box* %(93, 231)(1, 274)
+/Courier 48 13 108 246 (sd_index) text*
+/Courier 18 13 186 246 ( = ) text*
+0 0 0 begincolor* % black
+0.996109 0.996109 0.796887 begincolor* % #ffffcc
+204 233 384 233 384 246 204 246 box* %(204, 233)(180, 13)
+endcolor*
+0 0 0 begincolor* % black
+/Courier 6 13 204 246 (2) text*
+endcolor*
+endcolor*
+/Courier 60 13 108 308 (sd_current) text*
+/Courier 18 13 186 308 ( = ) text*
+0 0 0 begincolor* % black
+0.996109 0.996109 0.796887 begincolor* % #ffffcc
+204 246 384 246 384 358 204 358 box* %(204, 246)(180, 112)
+endcolor*
+0 0 0.545098 begincolor* % blue4
+204 246 384 246 384 247 204 247 box* %(204, 246)(180, 1)
+204 247 205 247 205 357 204 357 box* %(204, 247)(1, 110)
+0 0 0 begincolor* % black
+219 249 381 249 381 250 219 250 box* %(219, 249)(162, 1)
+219 250 220 250 220 280 219 280 box* %(219, 250)(1, 30)
+/Courier 30 13 234 265 (maddr) text*
+/Courier 18 13 264 265 ( = ) text*
+0 0 0.545098 begincolor* % blue4
+/Courier 84 13 282 265 (0x7ffff7ff7000) text*
+endcolor*
+/Courier 30 13 234 278 (laddr) text*
+/Courier 18 13 264 278 ( = ) text*
+0 0 0 begincolor* % black
+/Courier 24 13 282 278 (4096) text*
+endcolor*
+380 250 381 250 381 280 380 280 box* %(380, 250)(1, 30)
+219 280 381 280 381 281 219 281 box* %(219, 280)(162, 1)
+endcolor*
+219 283 381 283 381 284 219 284 box* %(219, 283)(162, 1)
+0 0 0 begincolor* % black
+219 286 381 286 381 287 219 287 box* %(219, 286)(162, 1)
+219 287 220 287 220 317 219 317 box* %(219, 287)(1, 30)
+/Courier 30 13 234 302 (maddr) text*
+/Courier 18 13 264 302 ( = ) text*
+0 0 0.545098 begincolor* % blue4
+/Courier 84 13 282 302 (0x7ffff7fe7000) text*
+endcolor*
+/Courier 30 13 234 315 (laddr) text*
+/Courier 18 13 264 315 ( = ) text*
+0 0 0 begincolor* % black
+/Courier 30 13 282 315 (65536) text*
+endcolor*
+380 287 381 287 381 317 380 317 box* %(380, 287)(1, 30)
+219 317 381 317 381 318 219 318 box* %(219, 317)(162, 1)
+endcolor*
+219 320 381 320 381 321 219 321 box* %(219, 320)(162, 1)
+0 0 0 begincolor* % black
+219 323 339 323 339 324 219 324 box* %(219, 323)(120, 1)
+219 324 220 324 220 354 219 354 box* %(219, 324)(1, 30)
+/Courier 30 13 234 339 (maddr) text*
+/Courier 18 13 264 339 ( = ) text*
+0 0 0.545098 begincolor* % blue4
+1 0 0 begincolor* % red
+/Courier 18 13 282 339 (0x0) text*
+endcolor*
+endcolor*
+/Courier 30 13 234 352 (laddr) text*
+/Courier 18 13 264 352 ( = ) text*
+0 0 0 begincolor* % black
+/Courier 6 13 282 352 (0) text*
+endcolor*
+338 324 339 324 339 354 338 354 box* %(338, 324)(1, 30)
+219 354 339 354 339 355 219 355 box* %(219, 354)(120, 1)
+endcolor*
+/Courier 12 13 339 345 ( <) text*
+/Courier 6 13 351 345 (1) text*
+/Courier 6 13 357 345 (2) text*
+/Courier 6 13 363 345 (4) text*
+/Courier 12 13 369 345 (\327>) text*
+383 247 384 247 384 357 383 357 box* %(383, 247)(1, 110)
+204 357 384 357 384 358 204 358 box* %(204, 357)(180, 1)
+endcolor*
+endcolor*
+/Courier 66 13 108 402 (sd_snapshot) text*
+/Courier 18 13 186 402 ( = ) text*
+0 0 0.545098 begincolor* % blue4
+204 358 384 358 384 359 204 359 box* %(204, 358)(180, 1)
+204 359 205 359 205 432 204 432 box* %(204, 359)(1, 73)
+0 0 0 begincolor* % black
+219 361 381 361 381 362 219 362 box* %(219, 361)(162, 1)
+219 362 220 362 220 392 219 392 box* %(219, 362)(1, 30)
+/Courier 30 13 234 377 (maddr) text*
+/Courier 18 13 264 377 ( = ) text*
+0 0 0.545098 begincolor* % blue4
+/Courier 84 13 282 377 (0x7ffff7ff7000) text*
+endcolor*
+/Courier 30 13 234 390 (laddr) text*
+/Courier 18 13 264 390 ( = ) text*
+0 0 0 begincolor* % black
+/Courier 24 13 282 390 (4096) text*
+endcolor*
+380 362 381 362 381 392 380 392 box* %(380, 362)(1, 30)
+219 392 381 392 381 393 219 393 box* %(219, 392)(162, 1)
+endcolor*
+219 395 381 395 381 396 219 396 box* %(219, 395)(162, 1)
+0 0 0 begincolor* % black
+219 398 339 398 339 399 219 399 box* %(219, 398)(120, 1)
+219 399 220 399 220 429 219 429 box* %(219, 399)(1, 30)
+/Courier 30 13 234 414 (maddr) text*
+/Courier 18 13 264 414 ( = ) text*
+0 0 0.545098 begincolor* % blue4
+1 0 0 begincolor* % red
+/Courier 18 13 282 414 (0x0) text*
+endcolor*
+endcolor*
+/Courier 30 13 234 427 (laddr) text*
+/Courier 18 13 264 427 ( = ) text*
+0 0 0 begincolor* % black
+/Courier 18 13 282 427 (...) text*
+endcolor*
+338 399 339 399 339 429 338 429 box* %(338, 399)(1, 30)
+219 429 339 429 339 430 219 430 box* %(219, 429)(120, 1)
+endcolor*
+/Courier 12 13 339 420 ( <) text*
+/Courier 6 13 351 420 (1) text*
+/Courier 6 13 357 420 (2) text*
+/Courier 6 13 363 420 (5) text*
+/Courier 12 13 369 420 (\327>) text*
+383 359 384 359 384 432 383 432 box* %(383, 359)(1, 73)
+204 432 384 432 384 433 204 433 box* %(204, 432)(180, 1)
+endcolor*
+/Courier 78 13 108 449 (sd_maddr_root) text*
+/Courier 18 13 186 449 ( = ) text*
+0 0 0 begincolor* % black
+204 433 384 433 384 434 204 434 box* %(204, 433)(180, 1)
+204 434 205 434 205 451 204 451 box* %(204, 434)(1, 17)
+/Courier 48 13 219 449 (sph_root) text*
+/Courier 18 13 267 449 ( = ) text*
+0 0 0 begincolor* % black
+0.996109 0.996109 0.796887 begincolor* % #ffffcc
+285 436 381 436 381 449 285 449 box* %(285, 436)(96, 13)
+endcolor*
+0 0 0.545098 begincolor* % blue4
+/Courier 84 13 285 449 (0x7ffff7fe5000) text*
+endcolor*
+endcolor*
+383 434 384 434 384 451 383 451 box* %(383, 434)(1, 17)
+204 451 384 451 384 452 204 452 box* %(204, 451)(180, 1)
+endcolor*
+/Courier 72 13 108 468 (sd_size_root) text*
+/Courier 18 13 186 468 ( = ) text*
+0 0 0 begincolor* % black
+204 452 384 452 384 453 204 453 box* %(204, 452)(180, 1)
+204 453 205 453 205 470 204 470 box* %(204, 453)(1, 17)
+/Courier 48 13 219 468 (sph_root) text*
+/Courier 18 13 267 468 ( = ) text*
+0 0 0.545098 begincolor* % blue4
+/Courier 48 13 285 468 (0x602170) text*
+endcolor*
+383 453 384 453 384 470 383 470 box* %(383, 453)(1, 17)
+204 470 384 470 384 471 204 471 box* %(204, 470)(180, 1)
+endcolor*
+/Courier 72 13 108 493 (sd_free_list) text*
+/Courier 18 13 186 493 ( = ) text*
+0 0 0 begincolor* % black
+204 471 384 471 384 472 204 472 box* %(204, 471)(180, 1)
+204 472 205 472 205 502 204 502 box* %(204, 472)(1, 30)
+/Courier 60 13 219 487 (stqh_first) text*
+/Courier 18 13 279 487 ( = ) text*
+0 0 0 begincolor* % black
+0.996109 0.996109 0.796887 begincolor* % #ffffcc
+297 474 381 474 381 487 297 487 box* %(297, 474)(84, 13)
+endcolor*
+0 0 0.545098 begincolor* % blue4
+/Courier 84 13 297 487 (0x7ffff7fe5048) text*
+endcolor*
+endcolor*
+/Courier 54 13 219 500 (stqh_last) text*
+/Courier 18 13 279 500 ( = ) text*
+0 0 0 begincolor* % black
+0.996109 0.996109 0.796887 begincolor* % #ffffcc
+297 487 381 487 381 500 297 500 box* %(297, 487)(84, 13)
+endcolor*
+0 0 0.545098 begincolor* % blue4
+/Courier 84 13 297 500 (0x7ffff7fe5078) text*
+endcolor*
+endcolor*
+383 472 384 472 384 502 383 502 box* %(383, 472)(1, 30)
+204 502 384 502 384 503 204 503 box* %(204, 502)(180, 1)
+endcolor*
+386 231 387 231 387 505 386 505 box* %(386, 231)(1, 274)
+93 505 387 505 387 506 93 506 box* %(93, 505)(294, 1)
+endcolor*
+389 228 390 228 390 508 389 508 box* %(389, 228)(1, 280)
+90 508 390 508 390 509 90 509 box* %(90, 508)(300, 1)
+endcolor*
+0.745098 0.745098 0.745098 begincolor* % grey
+390 228 391 228 391 509 390 509 box* %(390, 228)(1, 281)
+endcolor*
+0.745098 0.745098 0.745098 begincolor* % grey
+91 509 391 509 391 510 91 510 box* %(91, 509)(300, 1)
+endcolor*
+486 352 763 352 763 544 486 544 clean*
+0 0 0 begincolor* % black
+486 352 762 352 762 353 486 353 box* %(486, 352)(276, 1)
+486 353 487 353 487 542 486 542 box* %(486, 353)(1, 189)
+0 0 0 begincolor* % black
+/Courier 6 13 489 368 (5) text*
+/Courier 12 13 495 368 (: ) text*
+/Courier-BoldOblique 120 13 507 368 (*\(\(\(CONTA...].maddr\)) text*
+endcolor*
+489 368 759 368 759 369 489 369 box* %(489, 368)(270, 1)
+0 0 0 begincolor* % black
+489 371 759 371 759 372 489 372 box* %(489, 371)(270, 1)
+489 372 490 372 490 539 489 539 box* %(489, 372)(1, 167)
+/Courier 48 13 504 387 (so_index) text*
+/Courier 18 13 570 387 ( = ) text*
+0 0 0 begincolor* % black
+/Courier 6 13 588 387 (2) text*
+endcolor*
+/Courier 60 13 504 431 (so_current) text*
+/Courier 18 13 570 431 ( = ) text*
+0 0 0.545098 begincolor* % blue4
+588 387 756 387 756 388 588 388 box* %(588, 387)(168, 1)
+588 388 589 388 589 461 588 461 box* %(588, 388)(1, 73)
+0 0 0 begincolor* % black
+603 390 753 390 753 391 603 391 box* %(603, 390)(150, 1)
+603 391 604 391 604 421 603 421 box* %(603, 391)(1, 30)
+/Courier 30 13 618 406 (maddr) text*
+/Courier 18 13 648 406 ( = ) text*
+0 0 0.545098 begincolor* % blue4
+/Courier 84 13 666 406 (0x7ffff7ff6000) text*
+endcolor*
+/Courier 30 13 618 419 (laddr) text*
+/Courier 18 13 648 419 ( = ) text*
+0 0 0 begincolor* % black
+/Courier 24 13 666 419 (8192) text*
+endcolor*
+752 391 753 391 753 421 752 421 box* %(752, 391)(1, 30)
+603 421 753 421 753 422 603 422 box* %(603, 421)(150, 1)
+endcolor*
+603 424 753 424 753 425 603 425 box* %(603, 424)(150, 1)
+0 0 0 begincolor* % black
+603 427 753 427 753 428 603 428 box* %(603, 427)(150, 1)
+603 428 604 428 604 458 603 458 box* %(603, 428)(1, 30)
+/Courier 30 13 618 443 (maddr) text*
+/Courier 18 13 648 443 ( = ) text*
+0 0 0.545098 begincolor* % blue4
+/Courier 84 13 666 443 (0x7ffff7fee000) text*
+endcolor*
+/Courier 30 13 618 456 (laddr) text*
+/Courier 18 13 648 456 ( = ) text*
+0 0 0 begincolor* % black
+/Courier 30 13 666 456 (36864) text*
+endcolor*
+752 428 753 428 753 458 752 458 box* %(752, 428)(1, 30)
+603 458 753 458 753 459 603 459 box* %(603, 458)(150, 1)
+endcolor*
+755 388 756 388 756 461 755 461 box* %(755, 388)(1, 73)
+588 461 756 461 756 462 588 462 box* %(588, 461)(168, 1)
+endcolor*
+/Courier 66 13 504 506 (so_snapshot) text*
+/Courier 18 13 570 506 ( = ) text*
+0 0 0.545098 begincolor* % blue4
+588 462 756 462 756 463 588 463 box* %(588, 462)(168, 1)
+588 463 589 463 589 536 588 536 box* %(588, 463)(1, 73)
+0 0 0 begincolor* % black
+603 465 753 465 753 466 603 466 box* %(603, 465)(150, 1)
+603 466 604 466 604 496 603 496 box* %(603, 466)(1, 30)
+/Courier 30 13 618 481 (maddr) text*
+/Courier 18 13 648 481 ( = ) text*
+0 0 0.545098 begincolor* % blue4
+/Courier 84 13 666 481 (0x7ffff7ff6000) text*
+endcolor*
+/Courier 30 13 618 494 (laddr) text*
+/Courier 18 13 648 494 ( = ) text*
+0 0 0 begincolor* % black
+/Courier 24 13 666 494 (8192) text*
+endcolor*
+752 466 753 466 753 496 752 496 box* %(752, 466)(1, 30)
+603 496 753 496 753 497 603 497 box* %(603, 496)(150, 1)
+endcolor*
+603 499 753 499 753 500 603 500 box* %(603, 499)(150, 1)
+0 0 0 begincolor* % black
+603 502 753 502 753 503 603 503 box* %(603, 502)(150, 1)
+603 503 604 503 604 533 603 533 box* %(603, 503)(1, 30)
+/Courier 30 13 618 518 (maddr) text*
+/Courier 18 13 648 518 ( = ) text*
+0 0 0.545098 begincolor* % blue4
+1 0 0 begincolor* % red
+/Courier 18 13 666 518 (0x0) text*
+endcolor*
+endcolor*
+/Courier 30 13 618 531 (laddr) text*
+/Courier 18 13 648 531 ( = ) text*
+0 0 0 begincolor* % black
+/Courier 6 13 666 531 (0) text*
+endcolor*
+752 503 753 503 753 533 752 533 box* %(752, 503)(1, 30)
+603 533 753 533 753 534 603 534 box* %(603, 533)(150, 1)
+endcolor*
+755 463 756 463 756 536 755 536 box* %(755, 463)(1, 73)
+588 536 756 536 756 537 588 537 box* %(588, 536)(168, 1)
+endcolor*
+758 372 759 372 759 539 758 539 box* %(758, 372)(1, 167)
+489 539 759 539 759 540 489 540 box* %(489, 539)(270, 1)
+endcolor*
+761 353 762 353 762 542 761 542 box* %(761, 353)(1, 189)
+486 542 762 542 762 543 486 543 box* %(486, 542)(276, 1)
+endcolor*
+0.745098 0.745098 0.745098 begincolor* % grey
+762 353 763 353 763 543 762 543 box* %(762, 353)(1, 190)
+endcolor*
+0.745098 0.745098 0.745098 begincolor* % grey
+487 543 763 543 763 544 487 544 box* %(487, 543)(276, 1)
+endcolor*
+470 768 747 768 747 960 470 960 clean*
+0 0 0 begincolor* % black
+470 768 746 768 746 769 470 769 box* %(470, 768)(276, 1)
+470 769 471 769 471 958 470 958 box* %(470, 769)(1, 189)
+0 0 0 begincolor* % black
+/Courier 12 13 473 784 (15) text*
+/Courier 12 13 485 784 (: ) text*
+/Courier-BoldOblique 120 13 497 784 (*\(\(\(CONTA...].maddr\)) text*
+endcolor*
+473 784 743 784 743 785 473 785 box* %(473, 784)(270, 1)
+0 0 0 begincolor* % black
+473 787 743 787 743 788 473 788 box* %(473, 787)(270, 1)
+473 788 474 788 474 955 473 955 box* %(473, 788)(1, 167)
+/Courier 48 13 488 803 (so_index) text*
+/Courier 18 13 554 803 ( = ) text*
+0 0 0 begincolor* % black
+/Courier 6 13 572 803 (1) text*
+endcolor*
+/Courier 60 13 488 847 (so_current) text*
+/Courier 18 13 554 847 ( = ) text*
+0 0 0.545098 begincolor* % blue4
+572 803 740 803 740 804 572 804 box* %(572, 803)(168, 1)
+572 804 573 804 573 877 572 877 box* %(572, 804)(1, 73)
+0 0 0 begincolor* % black
+587 806 737 806 737 807 587 807 box* %(587, 806)(150, 1)
+587 807 588 807 588 837 587 837 box* %(587, 807)(1, 30)
+/Courier 30 13 602 822 (maddr) text*
+/Courier 18 13 632 822 ( = ) text*
+0 0 0.545098 begincolor* % blue4
+/Courier 84 13 650 822 (0x7ffff7fe6000) text*
+endcolor*
+/Courier 30 13 602 835 (laddr) text*
+/Courier 18 13 632 835 ( = ) text*
+0 0 0 begincolor* % black
+/Courier 30 13 650 835 (69632) text*
+endcolor*
+736 807 737 807 737 837 736 837 box* %(736, 807)(1, 30)
+587 837 737 837 737 838 587 838 box* %(587, 837)(150, 1)
+endcolor*
+587 840 737 840 737 841 587 841 box* %(587, 840)(150, 1)
+0 0 0 begincolor* % black
+587 843 737 843 737 844 587 844 box* %(587, 843)(150, 1)
+587 844 588 844 588 874 587 874 box* %(587, 844)(1, 30)
+/Courier 30 13 602 859 (maddr) text*
+/Courier 18 13 632 859 ( = ) text*
+0 0 0.545098 begincolor* % blue4
+1 0 0 begincolor* % red
+/Courier 18 13 650 859 (0x0) text*
+endcolor*
+endcolor*
+/Courier 30 13 602 872 (laddr) text*
+/Courier 18 13 632 872 ( = ) text*
+0 0 0 begincolor* % black
+/Courier 6 13 650 872 (0) text*
+endcolor*
+736 844 737 844 737 874 736 874 box* %(736, 844)(1, 30)
+587 874 737 874 737 875 587 875 box* %(587, 874)(150, 1)
+endcolor*
+739 804 740 804 740 877 739 877 box* %(739, 804)(1, 73)
+572 877 740 877 740 878 572 878 box* %(572, 877)(168, 1)
+endcolor*
+/Courier 66 13 488 922 (so_snapshot) text*
+/Courier 18 13 554 922 ( = ) text*
+0 0 0.545098 begincolor* % blue4
+572 878 740 878 740 879 572 879 box* %(572, 878)(168, 1)
+572 879 573 879 573 952 572 952 box* %(572, 879)(1, 73)
+0 0 0 begincolor* % black
+587 881 737 881 737 882 587 882 box* %(587, 881)(150, 1)
+587 882 588 882 588 912 587 912 box* %(587, 882)(1, 30)
+/Courier 30 13 602 897 (maddr) text*
+/Courier 18 13 632 897 ( = ) text*
+0 0 0.545098 begincolor* % blue4
+1 0 0 begincolor* % red
+/Courier 18 13 650 897 (0x0) text*
+endcolor*
+endcolor*
+/Courier 30 13 602 910 (laddr) text*
+/Courier 18 13 632 910 ( = ) text*
+0 0 0 begincolor* % black
+/Courier 6 13 650 910 (0) text*
+endcolor*
+736 882 737 882 737 912 736 912 box* %(736, 882)(1, 30)
+587 912 737 912 737 913 587 913 box* %(587, 912)(150, 1)
+endcolor*
+587 915 737 915 737 916 587 916 box* %(587, 915)(150, 1)
+0 0 0 begincolor* % black
+587 918 737 918 737 919 587 919 box* %(587, 918)(150, 1)
+587 919 588 919 588 949 587 949 box* %(587, 919)(1, 30)
+/Courier 30 13 602 934 (maddr) text*
+/Courier 18 13 632 934 ( = ) text*
+0 0 0.545098 begincolor* % blue4
+1 0 0 begincolor* % red
+/Courier 18 13 650 934 (0x0) text*
+endcolor*
+endcolor*
+/Courier 30 13 602 947 (laddr) text*
+/Courier 18 13 632 947 ( = ) text*
+0 0 0 begincolor* % black
+/Courier 6 13 650 947 (0) text*
+endcolor*
+736 919 737 919 737 949 736 949 box* %(736, 919)(1, 30)
+587 949 737 949 737 950 587 950 box* %(587, 949)(150, 1)
+endcolor*
+739 879 740 879 740 952 739 952 box* %(739, 879)(1, 73)
+572 952 740 952 740 953 572 953 box* %(572, 952)(168, 1)
+endcolor*
+742 788 743 788 743 955 742 955 box* %(742, 788)(1, 167)
+473 955 743 955 743 956 473 956 box* %(473, 955)(270, 1)
+endcolor*
+745 769 746 769 746 958 745 958 box* %(745, 769)(1, 189)
+470 958 746 958 746 959 470 959 box* %(470, 958)(276, 1)
+endcolor*
+0.745098 0.745098 0.745098 begincolor* % grey
+746 769 747 769 747 959 746 959 box* %(746, 769)(1, 190)
+endcolor*
+0.745098 0.745098 0.745098 begincolor* % grey
+471 959 747 959 747 960 471 960 box* %(471, 959)(276, 1)
+endcolor*
+1046 624 1323 624 1323 816 1046 816 clean*
+0 0 0 begincolor* % black
+1046 624 1322 624 1322 625 1046 625 box* %(1046, 624)(276, 1)
+1046 625 1047 625 1047 814 1046 814 box* %(1046, 625)(1, 189)
+0 0 0 begincolor* % black
+/Courier 12 13 1049 640 (11) text*
+/Courier 12 13 1061 640 (: ) text*
+/Courier-BoldOblique 120 13 1073 640 (*\(\(\(\(CONT...].maddr\)) text*
+endcolor*
+1049 640 1319 640 1319 641 1049 641 box* %(1049, 640)(270, 1)
+0 0 0 begincolor* % black
+1049 643 1319 643 1319 644 1049 644 box* %(1049, 643)(270, 1)
+1049 644 1050 644 1050 811 1049 811 box* %(1049, 644)(1, 167)
+/Courier 48 13 1064 659 (si_index) text*
+/Courier 18 13 1130 659 ( = ) text*
+0 0 0 begincolor* % black
+/Courier 6 13 1148 659 (2) text*
+endcolor*
+/Courier 60 13 1064 703 (si_current) text*
+/Courier 18 13 1130 703 ( = ) text*
+0 0 0.545098 begincolor* % blue4
+1148 659 1316 659 1316 660 1148 660 box* %(1148, 659)(168, 1)
+1148 660 1149 660 1149 733 1148 733 box* %(1148, 660)(1, 73)
+0 0 0 begincolor* % black
+1163 662 1313 662 1313 663 1163 663 box* %(1163, 662)(150, 1)
+1163 663 1164 663 1164 693 1163 693 box* %(1163, 663)(1, 30)
+/Courier 30 13 1178 678 (maddr) text*
+/Courier 18 13 1208 678 ( = ) text*
+0 0 0.545098 begincolor* % blue4
+/Courier 84 13 1226 678 (0x7ffff7fed000) text*
+endcolor*
+/Courier 30 13 1178 691 (laddr) text*
+/Courier 18 13 1208 691 ( = ) text*
+0 0 0 begincolor* % black
+/Courier 30 13 1226 691 (40960) text*
+endcolor*
+1312 663 1313 663 1313 693 1312 693 box* %(1312, 663)(1, 30)
+1163 693 1313 693 1313 694 1163 694 box* %(1163, 693)(150, 1)
+endcolor*
+1163 696 1313 696 1313 697 1163 697 box* %(1163, 696)(150, 1)
+0 0 0 begincolor* % black
+1163 699 1313 699 1313 700 1163 700 box* %(1163, 699)(150, 1)
+1163 700 1164 700 1164 730 1163 730 box* %(1163, 700)(1, 30)
+/Courier 30 13 1178 715 (maddr) text*
+/Courier 18 13 1208 715 ( = ) text*
+0 0 0.545098 begincolor* % blue4
+/Courier 84 13 1226 715 (0x7ffff7fea000) text*
+endcolor*
+/Courier 30 13 1178 728 (laddr) text*
+/Courier 18 13 1208 728 ( = ) text*
+0 0 0 begincolor* % black
+/Courier 30 13 1226 728 (53248) text*
+endcolor*
+1312 700 1313 700 1313 730 1312 730 box* %(1312, 700)(1, 30)
+1163 730 1313 730 1313 731 1163 731 box* %(1163, 730)(150, 1)
+endcolor*
+1315 660 1316 660 1316 733 1315 733 box* %(1315, 660)(1, 73)
+1148 733 1316 733 1316 734 1148 734 box* %(1148, 733)(168, 1)
+endcolor*
+/Courier 66 13 1064 778 (si_snapshot) text*
+/Courier 18 13 1130 778 ( = ) text*
+0 0 0.545098 begincolor* % blue4
+1148 734 1316 734 1316 735 1148 735 box* %(1148, 734)(168, 1)
+1148 735 1149 735 1149 808 1148 808 box* %(1148, 735)(1, 73)
+0 0 0 begincolor* % black
+1163 737 1313 737 1313 738 1163 738 box* %(1163, 737)(150, 1)
+1163 738 1164 738 1164 768 1163 768 box* %(1163, 738)(1, 30)
+/Courier 30 13 1178 753 (maddr) text*
+/Courier 18 13 1208 753 ( = ) text*
+0 0 0.545098 begincolor* % blue4
+1 0 0 begincolor* % red
+/Courier 18 13 1226 753 (0x0) text*
+endcolor*
+endcolor*
+/Courier 30 13 1178 766 (laddr) text*
+/Courier 18 13 1208 766 ( = ) text*
+0 0 0 begincolor* % black
+/Courier 6 13 1226 766 (0) text*
+endcolor*
+1312 738 1313 738 1313 768 1312 768 box* %(1312, 738)(1, 30)
+1163 768 1313 768 1313 769 1163 769 box* %(1163, 768)(150, 1)
+endcolor*
+1163 771 1313 771 1313 772 1163 772 box* %(1163, 771)(150, 1)
+0 0 0 begincolor* % black
+1163 774 1313 774 1313 775 1163 775 box* %(1163, 774)(150, 1)
+1163 775 1164 775 1164 805 1163 805 box* %(1163, 775)(1, 30)
+/Courier 30 13 1178 790 (maddr) text*
+/Courier 18 13 1208 790 ( = ) text*
+0 0 0.545098 begincolor* % blue4
+1 0 0 begincolor* % red
+/Courier 18 13 1226 790 (0x0) text*
+endcolor*
+endcolor*
+/Courier 30 13 1178 803 (laddr) text*
+/Courier 18 13 1208 803 ( = ) text*
+0 0 0 begincolor* % black
+/Courier 6 13 1226 803 (0) text*
+endcolor*
+1312 775 1313 775 1313 805 1312 805 box* %(1312, 775)(1, 30)
+1163 805 1313 805 1313 806 1163 806 box* %(1163, 805)(150, 1)
+endcolor*
+1315 735 1316 735 1316 808 1315 808 box* %(1315, 735)(1, 73)
+1148 808 1316 808 1316 809 1148 809 box* %(1148, 808)(168, 1)
+endcolor*
+1318 644 1319 644 1319 811 1318 811 box* %(1318, 644)(1, 167)
+1049 811 1319 811 1319 812 1049 812 box* %(1049, 811)(270, 1)
+endcolor*
+1321 625 1322 625 1322 814 1321 814 box* %(1321, 625)(1, 189)
+1046 814 1322 814 1322 815 1046 815 box* %(1046, 814)(276, 1)
+endcolor*
+0.745098 0.745098 0.745098 begincolor* % grey
+1322 625 1323 625 1323 815 1322 815 box* %(1322, 625)(1, 190)
+endcolor*
+0.745098 0.745098 0.745098 begincolor* % grey
+1047 815 1323 815 1323 816 1047 816 box* %(1047, 815)(276, 1)
+endcolor*
+886 368 1163 368 1163 560 886 560 clean*
+0 0 0 begincolor* % black
+886 368 1162 368 1162 369 886 369 box* %(886, 368)(276, 1)
+886 369 887 369 887 558 886 558 box* %(886, 369)(1, 189)
+0 0 0 begincolor* % black
+/Courier 6 13 889 384 (7) text*
+/Courier 12 13 895 384 (: ) text*
+/Courier-BoldOblique 120 13 907 384 (*\(\(\(\(CONT...].maddr\)) text*
+endcolor*
+889 384 1159 384 1159 385 889 385 box* %(889, 384)(270, 1)
+0 0 0 begincolor* % black
+889 387 1159 387 1159 388 889 388 box* %(889, 387)(270, 1)
+889 388 890 388 890 555 889 555 box* %(889, 388)(1, 167)
+/Courier 48 13 904 403 (si_index) text*
+/Courier 18 13 970 403 ( = ) text*
+0 0 0 begincolor* % black
+/Courier 6 13 988 403 (2) text*
+endcolor*
+/Courier 60 13 904 447 (si_current) text*
+/Courier 18 13 970 447 ( = ) text*
+0 0 0.545098 begincolor* % blue4
+988 403 1156 403 1156 404 988 404 box* %(988, 403)(168, 1)
+988 404 989 404 989 477 988 477 box* %(988, 404)(1, 73)
+0 0 0 begincolor* % black
+1003 406 1153 406 1153 407 1003 407 box* %(1003, 406)(150, 1)
+1003 407 1004 407 1004 437 1003 437 box* %(1003, 407)(1, 30)
+/Courier 30 13 1018 422 (maddr) text*
+/Courier 18 13 1048 422 ( = ) text*
+0 0 0.545098 begincolor* % blue4
+/Courier 84 13 1066 422 (0x7ffff7ff5000) text*
+endcolor*
+/Courier 30 13 1018 435 (laddr) text*
+/Courier 18 13 1048 435 ( = ) text*
+0 0 0 begincolor* % black
+/Courier 30 13 1066 435 (12288) text*
+endcolor*
+1152 407 1153 407 1153 437 1152 437 box* %(1152, 407)(1, 30)
+1003 437 1153 437 1153 438 1003 438 box* %(1003, 437)(150, 1)
+endcolor*
+1003 440 1153 440 1153 441 1003 441 box* %(1003, 440)(150, 1)
+0 0 0 begincolor* % black
+1003 443 1153 443 1153 444 1003 444 box* %(1003, 443)(150, 1)
+1003 444 1004 444 1004 474 1003 474 box* %(1003, 444)(1, 30)
+/Courier 30 13 1018 459 (maddr) text*
+/Courier 18 13 1048 459 ( = ) text*
+0 0 0.545098 begincolor* % blue4
+/Courier 84 13 1066 459 (0x7ffff7ff1000) text*
+endcolor*
+/Courier 30 13 1018 472 (laddr) text*
+/Courier 18 13 1048 472 ( = ) text*
+0 0 0 begincolor* % black
+/Courier 30 13 1066 472 (24576) text*
+endcolor*
+1152 444 1153 444 1153 474 1152 474 box* %(1152, 444)(1, 30)
+1003 474 1153 474 1153 475 1003 475 box* %(1003, 474)(150, 1)
+endcolor*
+1155 404 1156 404 1156 477 1155 477 box* %(1155, 404)(1, 73)
+988 477 1156 477 1156 478 988 478 box* %(988, 477)(168, 1)
+endcolor*
+/Courier 66 13 904 522 (si_snapshot) text*
+/Courier 18 13 970 522 ( = ) text*
+0 0 0.545098 begincolor* % blue4
+988 478 1156 478 1156 479 988 479 box* %(988, 478)(168, 1)
+988 479 989 479 989 552 988 552 box* %(988, 479)(1, 73)
+0 0 0 begincolor* % black
+1003 481 1153 481 1153 482 1003 482 box* %(1003, 481)(150, 1)
+1003 482 1004 482 1004 512 1003 512 box* %(1003, 482)(1, 30)
+/Courier 30 13 1018 497 (maddr) text*
+/Courier 18 13 1048 497 ( = ) text*
+0 0 0.545098 begincolor* % blue4
+/Courier 84 13 1066 497 (0x7ffff7ff5000) text*
+endcolor*
+/Courier 30 13 1018 510 (laddr) text*
+/Courier 18 13 1048 510 ( = ) text*
+0 0 0 begincolor* % black
+/Courier 30 13 1066 510 (12288) text*
+endcolor*
+1152 482 1153 482 1153 512 1152 512 box* %(1152, 482)(1, 30)
+1003 512 1153 512 1153 513 1003 513 box* %(1003, 512)(150, 1)
+endcolor*
+1003 515 1153 515 1153 516 1003 516 box* %(1003, 515)(150, 1)
+0 0 0 begincolor* % black
+1003 518 1153 518 1153 519 1003 519 box* %(1003, 518)(150, 1)
+1003 519 1004 519 1004 549 1003 549 box* %(1003, 519)(1, 30)
+/Courier 30 13 1018 534 (maddr) text*
+/Courier 18 13 1048 534 ( = ) text*
+0 0 0.545098 begincolor* % blue4
+1 0 0 begincolor* % red
+/Courier 18 13 1066 534 (0x0) text*
+endcolor*
+endcolor*
+/Courier 30 13 1018 547 (laddr) text*
+/Courier 18 13 1048 547 ( = ) text*
+0 0 0 begincolor* % black
+/Courier 6 13 1066 547 (0) text*
+endcolor*
+1152 519 1153 519 1153 549 1152 549 box* %(1152, 519)(1, 30)
+1003 549 1153 549 1153 550 1003 550 box* %(1003, 549)(150, 1)
+endcolor*
+1155 479 1156 479 1156 552 1155 552 box* %(1155, 479)(1, 73)
+988 552 1156 552 1156 553 988 553 box* %(988, 552)(168, 1)
+endcolor*
+1158 388 1159 388 1159 555 1158 555 box* %(1158, 388)(1, 167)
+889 555 1159 555 1159 556 889 556 box* %(889, 555)(270, 1)
+endcolor*
+1161 369 1162 369 1162 558 1161 558 box* %(1161, 369)(1, 189)
+886 558 1162 558 1162 559 886 559 box* %(886, 558)(276, 1)
+endcolor*
+0.745098 0.745098 0.745098 begincolor* % grey
+1162 369 1163 369 1163 559 1162 559 box* %(1162, 369)(1, 190)
+endcolor*
+0.745098 0.745098 0.745098 begincolor* % grey
+887 559 1163 559 1163 560 887 560 box* %(887, 559)(276, 1)
+endcolor*
+1466 41 1863 41 1863 375 1466 375 clean*
+0 0 0 begincolor* % black
+1466 41 1862 41 1862 42 1466 42 box* %(1466, 41)(396, 1)
+1466 42 1467 42 1467 373 1466 373 box* %(1466, 42)(1, 331)
+0 0 0 begincolor* % black
+/Courier 6 13 1469 57 (9) text*
+/Courier 12 13 1475 57 (: ) text*
+/Courier-BoldOblique 120 13 1487 57 (*\(\(\(\(\(CON...].maddr\)) text*
+endcolor*
+1469 57 1859 57 1859 58 1469 58 box* %(1469, 57)(390, 1)
+0 0 0 begincolor* % black
+1469 60 1859 60 1859 61 1469 61 box* %(1469, 60)(390, 1)
+1469 61 1470 61 1470 370 1469 370 box* %(1469, 61)(1, 309)
+/Courier 60 13 1484 222 (sb_entries) text*
+/Courier 18 13 1544 222 ( = ) text*
+0 0 0.545098 begincolor* % blue4
+1562 63 1856 63 1856 64 1562 64 box* %(1562, 63)(294, 1)
+1562 64 1563 64 1563 367 1562 367 box* %(1562, 64)(1, 303)
+0 0 0 begincolor* % black
+1577 66 1853 66 1853 67 1577 67 box* %(1577, 66)(276, 1)
+1577 67 1578 67 1578 212 1577 212 box* %(1577, 67)(1, 145)
+/Courier 42 13 1592 82 (se_size) text*
+/Courier 18 13 1658 82 ( = ) text*
+0 0 0 begincolor* % black
+/Courier 24 13 1676 82 (2056) text*
+endcolor*
+/Courier 60 13 1592 104 (se_current) text*
+/Courier 18 13 1658 104 ( = ) text*
+0 0 0 begincolor* % black
+1676 82 1850 82 1850 83 1676 83 box* %(1676, 82)(174, 1)
+1676 83 1677 83 1677 113 1676 113 box* %(1676, 83)(1, 30)
+/Courier 30 13 1691 98 (maddr) text*
+/Courier 18 13 1721 98 ( = ) text*
+0 0 0.545098 begincolor* % blue4
+/Courier 84 13 1739 98 (0x7ffff7ff4000) text*
+endcolor*
+/Courier 30 13 1691 111 (laddr) text*
+/Courier 18 13 1721 111 ( = ) text*
+0 0 0 begincolor* % black
+/Courier 30 13 1739 111 (16384) text*
+endcolor*
+1849 83 1850 83 1850 113 1849 113 box* %(1849, 83)(1, 30)
+1676 113 1850 113 1850 114 1676 114 box* %(1676, 113)(174, 1)
+endcolor*
+/Courier 66 13 1592 136 (se_snapshot) text*
+/Courier 18 13 1658 136 ( = ) text*
+0 0 0 begincolor* % black
+1676 114 1850 114 1850 115 1676 115 box* %(1676, 114)(174, 1)
+1676 115 1677 115 1677 145 1676 145 box* %(1676, 115)(1, 30)
+/Courier 30 13 1691 130 (maddr) text*
+/Courier 18 13 1721 130 ( = ) text*
+0 0 0.545098 begincolor* % blue4
+/Courier 84 13 1739 130 (0x7ffff7ff4000) text*
+endcolor*
+/Courier 30 13 1691 143 (laddr) text*
+/Courier 18 13 1721 143 ( = ) text*
+0 0 0 begincolor* % black
+/Courier 30 13 1739 143 (16384) text*
+endcolor*
+1849 115 1850 115 1850 145 1849 145 box* %(1849, 115)(1, 30)
+1676 145 1850 145 1850 146 1676 146 box* %(1676, 145)(174, 1)
+endcolor*
+/Courier 54 13 1592 159 (se_bitmap) text*
+/Courier 18 13 1658 159 ( = ) text*
+0 0 0 begincolor* % black
+/Courier 36 13 1676 159 (\"\\001\") text*
+endcolor*
+/Courier 42 13 1592 175 (se_list) text*
+/Courier 18 13 1658 175 ( = ) text*
+0 0 0 begincolor* % black
+1676 159 1850 159 1850 160 1676 160 box* %(1676, 159)(174, 1)
+1676 160 1677 160 1677 177 1676 177 box* %(1676, 160)(1, 17)
+/Courier 54 13 1691 175 (stqe_next) text*
+/Courier 18 13 1745 175 ( = ) text*
+0 0 0.545098 begincolor* % blue4
+/Courier 84 13 1763 175 (0x7ffff7ff5048) text*
+endcolor*
+1849 160 1850 160 1850 177 1849 177 box* %(1849, 160)(1, 17)
+1676 177 1850 177 1850 178 1676 178 box* %(1676, 177)(174, 1)
+endcolor*
+/Courier 48 13 1592 200 (se_splay) text*
+/Courier 18 13 1658 200 ( = ) text*
+0 0 0 begincolor* % black
+1676 178 1850 178 1850 179 1676 179 box* %(1676, 178)(174, 1)
+1676 179 1677 179 1677 209 1676 209 box* %(1676, 179)(1, 30)
+/Courier 48 13 1691 194 (spe_left) text*
+/Courier 18 13 1745 194 ( = ) text*
+0 0 0.545098 begincolor* % blue4
+1 0 0 begincolor* % red
+/Courier 18 13 1763 194 (0x0) text*
+endcolor*
+endcolor*
+/Courier 54 13 1691 207 (spe_right) text*
+/Courier 18 13 1745 207 ( = ) text*
+0 0 0.545098 begincolor* % blue4
+1 0 0 begincolor* % red
+/Courier 18 13 1763 207 (0x0) text*
+endcolor*
+endcolor*
+1849 179 1850 179 1850 209 1849 209 box* %(1849, 179)(1, 30)
+1676 209 1850 209 1850 210 1676 210 box* %(1676, 209)(174, 1)
+endcolor*
+1852 67 1853 67 1853 212 1852 212 box* %(1852, 67)(1, 145)
+1577 212 1853 212 1853 213 1577 213 box* %(1577, 212)(276, 1)
+endcolor*
+1577 215 1853 215 1853 216 1577 216 box* %(1577, 215)(276, 1)
+0 0 0 begincolor* % black
+1577 218 1853 218 1853 219 1577 219 box* %(1577, 218)(276, 1)
+1577 219 1578 219 1578 364 1577 364 box* %(1577, 219)(1, 145)
+/Courier 42 13 1592 234 (se_size) text*
+/Courier 18 13 1658 234 ( = ) text*
+0 0 0 begincolor* % black
+/Courier 24 13 1676 234 (2056) text*
+endcolor*
+/Courier 60 13 1592 256 (se_current) text*
+/Courier 18 13 1658 256 ( = ) text*
+0 0 0 begincolor* % black
+1676 234 1850 234 1850 235 1676 235 box* %(1676, 234)(174, 1)
+1676 235 1677 235 1677 265 1676 265 box* %(1676, 235)(1, 30)
+/Courier 30 13 1691 250 (maddr) text*
+/Courier 18 13 1721 250 ( = ) text*
+0 0 0.545098 begincolor* % blue4
+/Courier 84 13 1739 250 (0x7ffff7ff2000) text*
+endcolor*
+/Courier 30 13 1691 263 (laddr) text*
+/Courier 18 13 1721 263 ( = ) text*
+0 0 0 begincolor* % black
+/Courier 30 13 1739 263 (20480) text*
+endcolor*
+1849 235 1850 235 1850 265 1849 265 box* %(1849, 235)(1, 30)
+1676 265 1850 265 1850 266 1676 266 box* %(1676, 265)(174, 1)
+endcolor*
+/Courier 66 13 1592 288 (se_snapshot) text*
+/Courier 18 13 1658 288 ( = ) text*
+0 0 0 begincolor* % black
+1676 266 1850 266 1850 267 1676 267 box* %(1676, 266)(174, 1)
+1676 267 1677 267 1677 297 1676 297 box* %(1676, 267)(1, 30)
+/Courier 30 13 1691 282 (maddr) text*
+/Courier 18 13 1721 282 ( = ) text*
+0 0 0.545098 begincolor* % blue4
+/Courier 84 13 1739 282 (0x7ffff7ff2000) text*
+endcolor*
+/Courier 30 13 1691 295 (laddr) text*
+/Courier 18 13 1721 295 ( = ) text*
+0 0 0 begincolor* % black
+/Courier 30 13 1739 295 (20480) text*
+endcolor*
+1849 267 1850 267 1850 297 1849 297 box* %(1849, 267)(1, 30)
+1676 297 1850 297 1850 298 1676 298 box* %(1676, 297)(174, 1)
+endcolor*
+/Courier 54 13 1592 311 (se_bitmap) text*
+/Courier 18 13 1658 311 ( = ) text*
+0 0 0 begincolor* % black
+/Courier 36 13 1676 311 (\"\\001\") text*
+endcolor*
+/Courier 42 13 1592 327 (se_list) text*
+/Courier 18 13 1658 327 ( = ) text*
+0 0 0 begincolor* % black
+1676 311 1850 311 1850 312 1676 312 box* %(1676, 311)(174, 1)
+1676 312 1677 312 1677 329 1676 329 box* %(1676, 312)(1, 17)
+/Courier 54 13 1691 327 (stqe_next) text*
+/Courier 18 13 1745 327 ( = ) text*
+0 0 0.545098 begincolor* % blue4
+/Courier 84 13 1763 327 (0x7ffff7ff1000) text*
+endcolor*
+1849 312 1850 312 1850 329 1849 329 box* %(1849, 312)(1, 17)
+1676 329 1850 329 1850 330 1676 330 box* %(1676, 329)(174, 1)
+endcolor*
+/Courier 48 13 1592 352 (se_splay) text*
+/Courier 18 13 1658 352 ( = ) text*
+0 0 0 begincolor* % black
+1676 330 1850 330 1850 331 1676 331 box* %(1676, 330)(174, 1)
+1676 331 1677 331 1677 361 1676 361 box* %(1676, 331)(1, 30)
+/Courier 48 13 1691 346 (spe_left) text*
+/Courier 18 13 1745 346 ( = ) text*
+0 0 0.545098 begincolor* % blue4
+1 0 0 begincolor* % red
+/Courier 18 13 1763 346 (0x0) text*
+endcolor*
+endcolor*
+/Courier 54 13 1691 359 (spe_right) text*
+/Courier 18 13 1745 359 ( = ) text*
+0 0 0.545098 begincolor* % blue4
+/Courier 84 13 1763 359 (0x7ffff7ff5000) text*
+endcolor*
+1849 331 1850 331 1850 361 1849 361 box* %(1849, 331)(1, 30)
+1676 361 1850 361 1850 362 1676 362 box* %(1676, 361)(174, 1)
+endcolor*
+1852 219 1853 219 1853 364 1852 364 box* %(1852, 219)(1, 145)
+1577 364 1853 364 1853 365 1577 365 box* %(1577, 364)(276, 1)
+endcolor*
+1855 64 1856 64 1856 367 1855 367 box* %(1855, 64)(1, 303)
+1562 367 1856 367 1856 368 1562 368 box* %(1562, 367)(294, 1)
+endcolor*
+1858 61 1859 61 1859 370 1858 370 box* %(1858, 61)(1, 309)
+1469 370 1859 370 1859 371 1469 371 box* %(1469, 370)(390, 1)
+endcolor*
+1861 42 1862 42 1862 373 1861 373 box* %(1861, 42)(1, 331)
+1466 373 1862 373 1862 374 1466 374 box* %(1466, 373)(396, 1)
+endcolor*
+0.745098 0.745098 0.745098 begincolor* % grey
+1862 42 1863 42 1863 374 1862 374 box* %(1862, 42)(1, 332)
+endcolor*
+0.745098 0.745098 0.745098 begincolor* % grey
+1467 374 1863 374 1863 375 1467 375 box* %(1467, 374)(396, 1)
+endcolor*
+1498 425 1895 425 1895 759 1498 759 clean*
+0 0 0 begincolor* % black
+1498 425 1894 425 1894 426 1498 426 box* %(1498, 425)(396, 1)
+1498 426 1499 426 1499 757 1498 757 box* %(1498, 426)(1, 331)
+0 0 0 begincolor* % black
+/Courier 12 13 1501 441 (10) text*
+/Courier 12 13 1513 441 (: ) text*
+/Courier-BoldOblique 120 13 1525 441 (*\(\(\(\(\(CON...].maddr\)) text*
+endcolor*
+1501 441 1891 441 1891 442 1501 442 box* %(1501, 441)(390, 1)
+0 0 0 begincolor* % black
+1501 444 1891 444 1891 445 1501 445 box* %(1501, 444)(390, 1)
+1501 445 1502 445 1502 754 1501 754 box* %(1501, 445)(1, 309)
+/Courier 60 13 1516 606 (sb_entries) text*
+/Courier 18 13 1576 606 ( = ) text*
+0 0 0.545098 begincolor* % blue4
+1594 447 1888 447 1888 448 1594 448 box* %(1594, 447)(294, 1)
+1594 448 1595 448 1595 751 1594 751 box* %(1594, 448)(1, 303)
+0 0 0 begincolor* % black
+1609 450 1885 450 1885 451 1609 451 box* %(1609, 450)(276, 1)
+1609 451 1610 451 1610 596 1609 596 box* %(1609, 451)(1, 145)
+/Courier 42 13 1624 466 (se_size) text*
+/Courier 18 13 1690 466 ( = ) text*
+0 0 0 begincolor* % black
+/Courier 24 13 1708 466 (2056) text*
+endcolor*
+/Courier 60 13 1624 488 (se_current) text*
+/Courier 18 13 1690 488 ( = ) text*
+0 0 0 begincolor* % black
+1708 466 1882 466 1882 467 1708 467 box* %(1708, 466)(174, 1)
+1708 467 1709 467 1709 497 1708 497 box* %(1708, 467)(1, 30)
+/Courier 30 13 1723 482 (maddr) text*
+/Courier 18 13 1753 482 ( = ) text*
+0 0 0.545098 begincolor* % blue4
+/Courier 84 13 1771 482 (0x7ffff7ff0000) text*
+endcolor*
+/Courier 30 13 1723 495 (laddr) text*
+/Courier 18 13 1753 495 ( = ) text*
+0 0 0 begincolor* % black
+/Courier 30 13 1771 495 (28672) text*
+endcolor*
+1881 467 1882 467 1882 497 1881 497 box* %(1881, 467)(1, 30)
+1708 497 1882 497 1882 498 1708 498 box* %(1708, 497)(174, 1)
+endcolor*
+/Courier 66 13 1624 520 (se_snapshot) text*
+/Courier 18 13 1690 520 ( = ) text*
+0 0 0 begincolor* % black
+1708 498 1882 498 1882 499 1708 499 box* %(1708, 498)(174, 1)
+1708 499 1709 499 1709 529 1708 529 box* %(1708, 499)(1, 30)
+/Courier 30 13 1723 514 (maddr) text*
+/Courier 18 13 1753 514 ( = ) text*
+0 0 0.545098 begincolor* % blue4
+/Courier 84 13 1771 514 (0x7ffff7ff0000) text*
+endcolor*
+/Courier 30 13 1723 527 (laddr) text*
+/Courier 18 13 1753 527 ( = ) text*
+0 0 0 begincolor* % black
+/Courier 30 13 1771 527 (28672) text*
+endcolor*
+1881 499 1882 499 1882 529 1881 529 box* %(1881, 499)(1, 30)
+1708 529 1882 529 1882 530 1708 530 box* %(1708, 529)(174, 1)
+endcolor*
+/Courier 54 13 1624 543 (se_bitmap) text*
+/Courier 18 13 1690 543 ( = ) text*
+0 0 0 begincolor* % black
+/Courier 36 13 1708 543 (\"\\001\") text*
+endcolor*
+/Courier 42 13 1624 559 (se_list) text*
+/Courier 18 13 1690 559 ( = ) text*
+0 0 0 begincolor* % black
+1708 543 1882 543 1882 544 1708 544 box* %(1708, 543)(174, 1)
+1708 544 1709 544 1709 561 1708 561 box* %(1708, 544)(1, 17)
+/Courier 54 13 1723 559 (stqe_next) text*
+/Courier 18 13 1777 559 ( = ) text*
+0 0 0.545098 begincolor* % blue4
+/Courier 84 13 1795 559 (0x7ffff7ff1048) text*
+endcolor*
+1881 544 1882 544 1882 561 1881 561 box* %(1881, 544)(1, 17)
+1708 561 1882 561 1882 562 1708 562 box* %(1708, 561)(174, 1)
+endcolor*
+/Courier 48 13 1624 584 (se_splay) text*
+/Courier 18 13 1690 584 ( = ) text*
+0 0 0 begincolor* % black
+1708 562 1882 562 1882 563 1708 563 box* %(1708, 562)(174, 1)
+1708 563 1709 563 1709 593 1708 593 box* %(1708, 563)(1, 30)
+/Courier 48 13 1723 578 (spe_left) text*
+/Courier 18 13 1777 578 ( = ) text*
+0 0 0.545098 begincolor* % blue4
+1 0 0 begincolor* % red
+/Courier 18 13 1795 578 (0x0) text*
+endcolor*
+endcolor*
+/Courier 54 13 1723 591 (spe_right) text*
+/Courier 18 13 1777 591 ( = ) text*
+0 0 0.545098 begincolor* % blue4
+/Courier 84 13 1795 591 (0x7ffff7ff5048) text*
+endcolor*
+1881 563 1882 563 1882 593 1881 593 box* %(1881, 563)(1, 30)
+1708 593 1882 593 1882 594 1708 594 box* %(1708, 593)(174, 1)
+endcolor*
+1884 451 1885 451 1885 596 1884 596 box* %(1884, 451)(1, 145)
+1609 596 1885 596 1885 597 1609 597 box* %(1609, 596)(276, 1)
+endcolor*
+1609 599 1885 599 1885 600 1609 600 box* %(1609, 599)(276, 1)
+0 0 0 begincolor* % black
+1609 602 1885 602 1885 603 1609 603 box* %(1609, 602)(276, 1)
+1609 603 1610 603 1610 748 1609 748 box* %(1609, 603)(1, 145)
+/Courier 42 13 1624 618 (se_size) text*
+/Courier 18 13 1690 618 ( = ) text*
+0 0 0 begincolor* % black
+/Courier 24 13 1708 618 (2056) text*
+endcolor*
+/Courier 60 13 1624 640 (se_current) text*
+/Courier 18 13 1690 640 ( = ) text*
+0 0 0 begincolor* % black
+1708 618 1882 618 1882 619 1708 619 box* %(1708, 618)(174, 1)
+1708 619 1709 619 1709 649 1708 649 box* %(1708, 619)(1, 30)
+/Courier 30 13 1723 634 (maddr) text*
+/Courier 18 13 1753 634 ( = ) text*
+0 0 0.545098 begincolor* % blue4
+/Courier 84 13 1771 634 (0x7ffff7fef000) text*
+endcolor*
+/Courier 30 13 1723 647 (laddr) text*
+/Courier 18 13 1753 647 ( = ) text*
+0 0 0 begincolor* % black
+/Courier 30 13 1771 647 (32768) text*
+endcolor*
+1881 619 1882 619 1882 649 1881 649 box* %(1881, 619)(1, 30)
+1708 649 1882 649 1882 650 1708 650 box* %(1708, 649)(174, 1)
+endcolor*
+/Courier 66 13 1624 672 (se_snapshot) text*
+/Courier 18 13 1690 672 ( = ) text*
+0 0 0 begincolor* % black
+1708 650 1882 650 1882 651 1708 651 box* %(1708, 650)(174, 1)
+1708 651 1709 651 1709 681 1708 681 box* %(1708, 651)(1, 30)
+/Courier 30 13 1723 666 (maddr) text*
+/Courier 18 13 1753 666 ( = ) text*
+0 0 0.545098 begincolor* % blue4
+/Courier 84 13 1771 666 (0x7ffff7fef000) text*
+endcolor*
+/Courier 30 13 1723 679 (laddr) text*
+/Courier 18 13 1753 679 ( = ) text*
+0 0 0 begincolor* % black
+/Courier 30 13 1771 679 (32768) text*
+endcolor*
+1881 651 1882 651 1882 681 1881 681 box* %(1881, 651)(1, 30)
+1708 681 1882 681 1882 682 1708 682 box* %(1708, 681)(174, 1)
+endcolor*
+/Courier 54 13 1624 695 (se_bitmap) text*
+/Courier 18 13 1690 695 ( = ) text*
+0 0 0 begincolor* % black
+/Courier 36 13 1708 695 (\"\\001\") text*
+endcolor*
+/Courier 42 13 1624 711 (se_list) text*
+/Courier 18 13 1690 711 ( = ) text*
+0 0 0 begincolor* % black
+1708 695 1882 695 1882 696 1708 696 box* %(1708, 695)(174, 1)
+1708 696 1709 696 1709 713 1708 713 box* %(1708, 696)(1, 17)
+/Courier 54 13 1723 711 (stqe_next) text*
+/Courier 18 13 1777 711 ( = ) text*
+0 0 0.545098 begincolor* % blue4
+/Courier 84 13 1795 711 (0x7ffff7fed000) text*
+endcolor*
+1881 696 1882 696 1882 713 1881 713 box* %(1881, 696)(1, 17)
+1708 713 1882 713 1882 714 1708 714 box* %(1708, 713)(174, 1)
+endcolor*
+/Courier 48 13 1624 736 (se_splay) text*
+/Courier 18 13 1690 736 ( = ) text*
+0 0 0 begincolor* % black
+1708 714 1882 714 1882 715 1708 715 box* %(1708, 714)(174, 1)
+1708 715 1709 715 1709 745 1708 745 box* %(1708, 715)(1, 30)
+/Courier 48 13 1723 730 (spe_left) text*
+/Courier 18 13 1777 730 ( = ) text*
+0 0 0.545098 begincolor* % blue4
+1 0 0 begincolor* % red
+/Courier 18 13 1795 730 (0x0) text*
+endcolor*
+endcolor*
+/Courier 54 13 1723 743 (spe_right) text*
+/Courier 18 13 1777 743 ( = ) text*
+0 0 0.545098 begincolor* % blue4
+/Courier 84 13 1795 743 (0x7ffff7ff1000) text*
+endcolor*
+1881 715 1882 715 1882 745 1881 745 box* %(1881, 715)(1, 30)
+1708 745 1882 745 1882 746 1708 746 box* %(1708, 745)(174, 1)
+endcolor*
+1884 603 1885 603 1885 748 1884 748 box* %(1884, 603)(1, 145)
+1609 748 1885 748 1885 749 1609 749 box* %(1609, 748)(276, 1)
+endcolor*
+1887 448 1888 448 1888 751 1887 751 box* %(1887, 448)(1, 303)
+1594 751 1888 751 1888 752 1594 752 box* %(1594, 751)(294, 1)
+endcolor*
+1890 445 1891 445 1891 754 1890 754 box* %(1890, 445)(1, 309)
+1501 754 1891 754 1891 755 1501 755 box* %(1501, 754)(390, 1)
+endcolor*
+1893 426 1894 426 1894 757 1893 757 box* %(1893, 426)(1, 331)
+1498 757 1894 757 1894 758 1498 758 box* %(1498, 757)(396, 1)
+endcolor*
+0.745098 0.745098 0.745098 begincolor* % grey
+1894 426 1895 426 1895 758 1894 758 box* %(1894, 426)(1, 332)
+endcolor*
+0.745098 0.745098 0.745098 begincolor* % grey
+1499 758 1895 758 1895 759 1499 759 box* %(1499, 758)(396, 1)
+endcolor*
+1562 793 1959 793 1959 1127 1562 1127 clean*
+0 0 0 begincolor* % black
+1562 793 1958 793 1958 794 1562 794 box* %(1562, 793)(396, 1)
+1562 794 1563 794 1563 1125 1562 1125 box* %(1562, 794)(1, 331)
+0 0 0 begincolor* % black
+/Courier 12 13 1565 809 (12) text*
+/Courier 12 13 1577 809 (: ) text*
+/Courier-BoldOblique 120 13 1589 809 (*\(\(\(\(\(CON...].maddr\)) text*
+endcolor*
+1565 809 1955 809 1955 810 1565 810 box* %(1565, 809)(390, 1)
+0 0 0 begincolor* % black
+1565 812 1955 812 1955 813 1565 813 box* %(1565, 812)(390, 1)
+1565 813 1566 813 1566 1122 1565 1122 box* %(1565, 813)(1, 309)
+/Courier 60 13 1580 974 (sb_entries) text*
+/Courier 18 13 1640 974 ( = ) text*
+0 0 0.545098 begincolor* % blue4
+1658 815 1952 815 1952 816 1658 816 box* %(1658, 815)(294, 1)
+1658 816 1659 816 1659 1119 1658 1119 box* %(1658, 816)(1, 303)
+0 0 0 begincolor* % black
+1673 818 1949 818 1949 819 1673 819 box* %(1673, 818)(276, 1)
+1673 819 1674 819 1674 964 1673 964 box* %(1673, 819)(1, 145)
+/Courier 42 13 1688 834 (se_size) text*
+/Courier 18 13 1754 834 ( = ) text*
+0 0 0 begincolor* % black
+/Courier 24 13 1772 834 (2056) text*
+endcolor*
+/Courier 60 13 1688 856 (se_current) text*
+/Courier 18 13 1754 856 ( = ) text*
+0 0 0 begincolor* % black
+1772 834 1946 834 1946 835 1772 835 box* %(1772, 834)(174, 1)
+1772 835 1773 835 1773 865 1772 865 box* %(1772, 835)(1, 30)
+/Courier 30 13 1787 850 (maddr) text*
+/Courier 18 13 1817 850 ( = ) text*
+0 0 0.545098 begincolor* % blue4
+/Courier 84 13 1835 850 (0x7ffff7fec000) text*
+endcolor*
+/Courier 30 13 1787 863 (laddr) text*
+/Courier 18 13 1817 863 ( = ) text*
+0 0 0 begincolor* % black
+/Courier 30 13 1835 863 (45056) text*
+endcolor*
+1945 835 1946 835 1946 865 1945 865 box* %(1945, 835)(1, 30)
+1772 865 1946 865 1946 866 1772 866 box* %(1772, 865)(174, 1)
+endcolor*
+/Courier 66 13 1688 888 (se_snapshot) text*
+/Courier 18 13 1754 888 ( = ) text*
+0 0 0 begincolor* % black
+1772 866 1946 866 1946 867 1772 867 box* %(1772, 866)(174, 1)
+1772 867 1773 867 1773 897 1772 897 box* %(1772, 867)(1, 30)
+/Courier 30 13 1787 882 (maddr) text*
+/Courier 18 13 1817 882 ( = ) text*
+0 0 0.545098 begincolor* % blue4
+/Courier 84 13 1835 882 (0x7ffff7fec000) text*
+endcolor*
+/Courier 30 13 1787 895 (laddr) text*
+/Courier 18 13 1817 895 ( = ) text*
+0 0 0 begincolor* % black
+/Courier 30 13 1835 895 (45056) text*
+endcolor*
+1945 867 1946 867 1946 897 1945 897 box* %(1945, 867)(1, 30)
+1772 897 1946 897 1946 898 1772 898 box* %(1772, 897)(174, 1)
+endcolor*
+/Courier 54 13 1688 911 (se_bitmap) text*
+/Courier 18 13 1754 911 ( = ) text*
+0 0 0 begincolor* % black
+/Courier 36 13 1772 911 (\"\\001\") text*
+endcolor*
+/Courier 42 13 1688 927 (se_list) text*
+/Courier 18 13 1754 927 ( = ) text*
+0 0 0 begincolor* % black
+1772 911 1946 911 1946 912 1772 912 box* %(1772, 911)(174, 1)
+1772 912 1773 912 1773 929 1772 929 box* %(1772, 912)(1, 17)
+/Courier 54 13 1787 927 (stqe_next) text*
+/Courier 18 13 1841 927 ( = ) text*
+0 0 0.545098 begincolor* % blue4
+/Courier 84 13 1859 927 (0x7ffff7fed048) text*
+endcolor*
+1945 912 1946 912 1946 929 1945 929 box* %(1945, 912)(1, 17)
+1772 929 1946 929 1946 930 1772 930 box* %(1772, 929)(174, 1)
+endcolor*
+/Courier 48 13 1688 952 (se_splay) text*
+/Courier 18 13 1754 952 ( = ) text*
+0 0 0 begincolor* % black
+1772 930 1946 930 1946 931 1772 931 box* %(1772, 930)(174, 1)
+1772 931 1773 931 1773 961 1772 961 box* %(1772, 931)(1, 30)
+/Courier 48 13 1787 946 (spe_left) text*
+/Courier 18 13 1841 946 ( = ) text*
+0 0 0.545098 begincolor* % blue4
+1 0 0 begincolor* % red
+/Courier 18 13 1859 946 (0x0) text*
+endcolor*
+endcolor*
+/Courier 54 13 1787 959 (spe_right) text*
+/Courier 18 13 1841 959 ( = ) text*
+0 0 0.545098 begincolor* % blue4
+/Courier 84 13 1859 959 (0x7ffff7ff1048) text*
+endcolor*
+1945 931 1946 931 1946 961 1945 961 box* %(1945, 931)(1, 30)
+1772 961 1946 961 1946 962 1772 962 box* %(1772, 961)(174, 1)
+endcolor*
+1948 819 1949 819 1949 964 1948 964 box* %(1948, 819)(1, 145)
+1673 964 1949 964 1949 965 1673 965 box* %(1673, 964)(276, 1)
+endcolor*
+1673 967 1949 967 1949 968 1673 968 box* %(1673, 967)(276, 1)
+0 0 0 begincolor* % black
+1673 970 1949 970 1949 971 1673 971 box* %(1673, 970)(276, 1)
+1673 971 1674 971 1674 1116 1673 1116 box* %(1673, 971)(1, 145)
+/Courier 42 13 1688 986 (se_size) text*
+/Courier 18 13 1754 986 ( = ) text*
+0 0 0 begincolor* % black
+/Courier 24 13 1772 986 (2056) text*
+endcolor*
+/Courier 60 13 1688 1008 (se_current) text*
+/Courier 18 13 1754 1008 ( = ) text*
+0 0 0 begincolor* % black
+1772 986 1946 986 1946 987 1772 987 box* %(1772, 986)(174, 1)
+1772 987 1773 987 1773 1017 1772 1017 box* %(1772, 987)(1, 30)
+/Courier 30 13 1787 1002 (maddr) text*
+/Courier 18 13 1817 1002 ( = ) text*
+0 0 0.545098 begincolor* % blue4
+/Courier 84 13 1835 1002 (0x7ffff7feb000) text*
+endcolor*
+/Courier 30 13 1787 1015 (laddr) text*
+/Courier 18 13 1817 1015 ( = ) text*
+0 0 0 begincolor* % black
+/Courier 30 13 1835 1015 (49152) text*
+endcolor*
+1945 987 1946 987 1946 1017 1945 1017 box* %(1945, 987)(1, 30)
+1772 1017 1946 1017 1946 1018 1772 1018 box* %(1772, 1017)(174, 1)
+endcolor*
+/Courier 66 13 1688 1040 (se_snapshot) text*
+/Courier 18 13 1754 1040 ( = ) text*
+0 0 0 begincolor* % black
+1772 1018 1946 1018 1946 1019 1772 1019 box* %(1772, 1018)(174, 1)
+1772 1019 1773 1019 1773 1049 1772 1049 box* %(1772, 1019)(1, 30)
+/Courier 30 13 1787 1034 (maddr) text*
+/Courier 18 13 1817 1034 ( = ) text*
+0 0 0.545098 begincolor* % blue4
+/Courier 84 13 1835 1034 (0x7ffff7feb000) text*
+endcolor*
+/Courier 30 13 1787 1047 (laddr) text*
+/Courier 18 13 1817 1047 ( = ) text*
+0 0 0 begincolor* % black
+/Courier 30 13 1835 1047 (49152) text*
+endcolor*
+1945 1019 1946 1019 1946 1049 1945 1049 box* %(1945, 1019)(1, 30)
+1772 1049 1946 1049 1946 1050 1772 1050 box* %(1772, 1049)(174, 1)
+endcolor*
+/Courier 54 13 1688 1063 (se_bitmap) text*
+/Courier 18 13 1754 1063 ( = ) text*
+0 0 0 begincolor* % black
+/Courier 36 13 1772 1063 (\"\\001\") text*
+endcolor*
+/Courier 42 13 1688 1079 (se_list) text*
+/Courier 18 13 1754 1079 ( = ) text*
+0 0 0 begincolor* % black
+1772 1063 1946 1063 1946 1064 1772 1064 box* %(1772, 1063)(174, 1)
+1772 1064 1773 1064 1773 1081 1772 1081 box* %(1772, 1064)(1, 17)
+/Courier 54 13 1787 1079 (stqe_next) text*
+/Courier 18 13 1841 1079 ( = ) text*
+0 0 0.545098 begincolor* % blue4
+/Courier 84 13 1859 1079 (0x7ffff7fea000) text*
+endcolor*
+1945 1064 1946 1064 1946 1081 1945 1081 box* %(1945, 1064)(1, 17)
+1772 1081 1946 1081 1946 1082 1772 1082 box* %(1772, 1081)(174, 1)
+endcolor*
+/Courier 48 13 1688 1104 (se_splay) text*
+/Courier 18 13 1754 1104 ( = ) text*
+0 0 0 begincolor* % black
+1772 1082 1946 1082 1946 1083 1772 1083 box* %(1772, 1082)(174, 1)
+1772 1083 1773 1083 1773 1113 1772 1113 box* %(1772, 1083)(1, 30)
+/Courier 48 13 1787 1098 (spe_left) text*
+/Courier 18 13 1841 1098 ( = ) text*
+0 0 0.545098 begincolor* % blue4
+1 0 0 begincolor* % red
+/Courier 18 13 1859 1098 (0x0) text*
+endcolor*
+endcolor*
+/Courier 54 13 1787 1111 (spe_right) text*
+/Courier 18 13 1841 1111 ( = ) text*
+0 0 0.545098 begincolor* % blue4
+/Courier 84 13 1859 1111 (0x7ffff7fed000) text*
+endcolor*
+1945 1083 1946 1083 1946 1113 1945 1113 box* %(1945, 1083)(1, 30)
+1772 1113 1946 1113 1946 1114 1772 1114 box* %(1772, 1113)(174, 1)
+endcolor*
+1948 971 1949 971 1949 1116 1948 1116 box* %(1948, 971)(1, 145)
+1673 1116 1949 1116 1949 1117 1673 1117 box* %(1673, 1116)(276, 1)
+endcolor*
+1951 816 1952 816 1952 1119 1951 1119 box* %(1951, 816)(1, 303)
+1658 1119 1952 1119 1952 1120 1658 1120 box* %(1658, 1119)(294, 1)
+endcolor*
+1954 813 1955 813 1955 1122 1954 1122 box* %(1954, 813)(1, 309)
+1565 1122 1955 1122 1955 1123 1565 1123 box* %(1565, 1122)(390, 1)
+endcolor*
+1957 794 1958 794 1958 1125 1957 1125 box* %(1957, 794)(1, 331)
+1562 1125 1958 1125 1958 1126 1562 1126 box* %(1562, 1125)(396, 1)
+endcolor*
+0.745098 0.745098 0.745098 begincolor* % grey
+1958 794 1959 794 1959 1126 1958 1126 box* %(1958, 794)(1, 332)
+endcolor*
+0.745098 0.745098 0.745098 begincolor* % grey
+1563 1126 1959 1126 1959 1127 1563 1127 box* %(1563, 1126)(396, 1)
+endcolor*
+1594 1161 1991 1161 1991 1495 1594 1495 clean*
+0 0 0 begincolor* % black
+1594 1161 1990 1161 1990 1162 1594 1162 box* %(1594, 1161)(396, 1)
+1594 1162 1595 1162 1595 1493 1594 1493 box* %(1594, 1162)(1, 331)
+0 0 0 begincolor* % black
+/Courier 12 13 1597 1177 (14) text*
+/Courier 12 13 1609 1177 (: ) text*
+/Courier-BoldOblique 120 13 1621 1177 (*\(\(\(\(\(CON...].maddr\)) text*
+endcolor*
+1597 1177 1987 1177 1987 1178 1597 1178 box* %(1597, 1177)(390, 1)
+0 0 0 begincolor* % black
+1597 1180 1987 1180 1987 1181 1597 1181 box* %(1597, 1180)(390, 1)
+1597 1181 1598 1181 1598 1490 1597 1490 box* %(1597, 1181)(1, 309)
+/Courier 60 13 1612 1342 (sb_entries) text*
+/Courier 18 13 1672 1342 ( = ) text*
+0 0 0.545098 begincolor* % blue4
+1690 1183 1984 1183 1984 1184 1690 1184 box* %(1690, 1183)(294, 1)
+1690 1184 1691 1184 1691 1487 1690 1487 box* %(1690, 1184)(1, 303)
+0 0 0 begincolor* % black
+1705 1186 1981 1186 1981 1187 1705 1187 box* %(1705, 1186)(276, 1)
+1705 1187 1706 1187 1706 1332 1705 1332 box* %(1705, 1187)(1, 145)
+/Courier 42 13 1720 1202 (se_size) text*
+/Courier 18 13 1786 1202 ( = ) text*
+0 0 0 begincolor* % black
+/Courier 24 13 1804 1202 (2056) text*
+endcolor*
+/Courier 60 13 1720 1224 (se_current) text*
+/Courier 18 13 1786 1224 ( = ) text*
+0 0 0 begincolor* % black
+1804 1202 1978 1202 1978 1203 1804 1203 box* %(1804, 1202)(174, 1)
+1804 1203 1805 1203 1805 1233 1804 1233 box* %(1804, 1203)(1, 30)
+/Courier 30 13 1819 1218 (maddr) text*
+/Courier 18 13 1849 1218 ( = ) text*
+0 0 0.545098 begincolor* % blue4
+/Courier 84 13 1867 1218 (0x7ffff7fe9000) text*
+endcolor*
+/Courier 30 13 1819 1231 (laddr) text*
+/Courier 18 13 1849 1231 ( = ) text*
+0 0 0 begincolor* % black
+/Courier 30 13 1867 1231 (57344) text*
+endcolor*
+1977 1203 1978 1203 1978 1233 1977 1233 box* %(1977, 1203)(1, 30)
+1804 1233 1978 1233 1978 1234 1804 1234 box* %(1804, 1233)(174, 1)
+endcolor*
+/Courier 66 13 1720 1256 (se_snapshot) text*
+/Courier 18 13 1786 1256 ( = ) text*
+0 0 0 begincolor* % black
+1804 1234 1978 1234 1978 1235 1804 1235 box* %(1804, 1234)(174, 1)
+1804 1235 1805 1235 1805 1265 1804 1265 box* %(1804, 1235)(1, 30)
+/Courier 30 13 1819 1250 (maddr) text*
+/Courier 18 13 1849 1250 ( = ) text*
+0 0 0.545098 begincolor* % blue4
+/Courier 84 13 1867 1250 (0x7ffff7fe9000) text*
+endcolor*
+/Courier 30 13 1819 1263 (laddr) text*
+/Courier 18 13 1849 1263 ( = ) text*
+0 0 0 begincolor* % black
+/Courier 30 13 1867 1263 (57344) text*
+endcolor*
+1977 1235 1978 1235 1978 1265 1977 1265 box* %(1977, 1235)(1, 30)
+1804 1265 1978 1265 1978 1266 1804 1266 box* %(1804, 1265)(174, 1)
+endcolor*
+/Courier 54 13 1720 1279 (se_bitmap) text*
+/Courier 18 13 1786 1279 ( = ) text*
+0 0 0 begincolor* % black
+/Courier 36 13 1804 1279 (\"\\001\") text*
+endcolor*
+/Courier 42 13 1720 1295 (se_list) text*
+/Courier 18 13 1786 1295 ( = ) text*
+0 0 0 begincolor* % black
+1804 1279 1978 1279 1978 1280 1804 1280 box* %(1804, 1279)(174, 1)
+1804 1280 1805 1280 1805 1297 1804 1297 box* %(1804, 1280)(1, 17)
+/Courier 54 13 1819 1295 (stqe_next) text*
+/Courier 18 13 1873 1295 ( = ) text*
+0 0 0.545098 begincolor* % blue4
+/Courier 84 13 1891 1295 (0x7ffff7fea048) text*
+endcolor*
+1977 1280 1978 1280 1978 1297 1977 1297 box* %(1977, 1280)(1, 17)
+1804 1297 1978 1297 1978 1298 1804 1298 box* %(1804, 1297)(174, 1)
+endcolor*
+/Courier 48 13 1720 1320 (se_splay) text*
+/Courier 18 13 1786 1320 ( = ) text*
+0 0 0 begincolor* % black
+1804 1298 1978 1298 1978 1299 1804 1299 box* %(1804, 1298)(174, 1)
+1804 1299 1805 1299 1805 1329 1804 1329 box* %(1804, 1299)(1, 30)
+/Courier 48 13 1819 1314 (spe_left) text*
+/Courier 18 13 1873 1314 ( = ) text*
+0 0 0.545098 begincolor* % blue4
+1 0 0 begincolor* % red
+/Courier 18 13 1891 1314 (0x0) text*
+endcolor*
+endcolor*
+/Courier 54 13 1819 1327 (spe_right) text*
+/Courier 18 13 1873 1327 ( = ) text*
+0 0 0.545098 begincolor* % blue4
+/Courier 84 13 1891 1327 (0x7ffff7fed048) text*
+endcolor*
+1977 1299 1978 1299 1978 1329 1977 1329 box* %(1977, 1299)(1, 30)
+1804 1329 1978 1329 1978 1330 1804 1330 box* %(1804, 1329)(174, 1)
+endcolor*
+1980 1187 1981 1187 1981 1332 1980 1332 box* %(1980, 1187)(1, 145)
+1705 1332 1981 1332 1981 1333 1705 1333 box* %(1705, 1332)(276, 1)
+endcolor*
+1705 1335 1981 1335 1981 1336 1705 1336 box* %(1705, 1335)(276, 1)
+0 0 0 begincolor* % black
+1705 1338 1981 1338 1981 1339 1705 1339 box* %(1705, 1338)(276, 1)
+1705 1339 1706 1339 1706 1484 1705 1484 box* %(1705, 1339)(1, 145)
+/Courier 42 13 1720 1354 (se_size) text*
+/Courier 18 13 1786 1354 ( = ) text*
+0 0 0 begincolor* % black
+/Courier 24 13 1804 1354 (2056) text*
+endcolor*
+/Courier 60 13 1720 1376 (se_current) text*
+/Courier 18 13 1786 1376 ( = ) text*
+0 0 0 begincolor* % black
+1804 1354 1978 1354 1978 1355 1804 1355 box* %(1804, 1354)(174, 1)
+1804 1355 1805 1355 1805 1385 1804 1385 box* %(1804, 1355)(1, 30)
+/Courier 30 13 1819 1370 (maddr) text*
+/Courier 18 13 1849 1370 ( = ) text*
+0 0 0.545098 begincolor* % blue4
+/Courier 84 13 1867 1370 (0x7ffff7fe8000) text*
+endcolor*
+/Courier 30 13 1819 1383 (laddr) text*
+/Courier 18 13 1849 1383 ( = ) text*
+0 0 0 begincolor* % black
+/Courier 30 13 1867 1383 (61440) text*
+endcolor*
+1977 1355 1978 1355 1978 1385 1977 1385 box* %(1977, 1355)(1, 30)
+1804 1385 1978 1385 1978 1386 1804 1386 box* %(1804, 1385)(174, 1)
+endcolor*
+/Courier 66 13 1720 1408 (se_snapshot) text*
+/Courier 18 13 1786 1408 ( = ) text*
+0 0 0 begincolor* % black
+1804 1386 1978 1386 1978 1387 1804 1387 box* %(1804, 1386)(174, 1)
+1804 1387 1805 1387 1805 1417 1804 1417 box* %(1804, 1387)(1, 30)
+/Courier 30 13 1819 1402 (maddr) text*
+/Courier 18 13 1849 1402 ( = ) text*
+0 0 0.545098 begincolor* % blue4
+/Courier 84 13 1867 1402 (0x7ffff7fe8000) text*
+endcolor*
+/Courier 30 13 1819 1415 (laddr) text*
+/Courier 18 13 1849 1415 ( = ) text*
+0 0 0 begincolor* % black
+/Courier 30 13 1867 1415 (61440) text*
+endcolor*
+1977 1387 1978 1387 1978 1417 1977 1417 box* %(1977, 1387)(1, 30)
+1804 1417 1978 1417 1978 1418 1804 1418 box* %(1804, 1417)(174, 1)
+endcolor*
+/Courier 54 13 1720 1431 (se_bitmap) text*
+/Courier 18 13 1786 1431 ( = ) text*
+0 0 0 begincolor* % black
+/Courier 36 13 1804 1431 (\"\\001\") text*
+endcolor*
+/Courier 42 13 1720 1447 (se_list) text*
+/Courier 18 13 1786 1447 ( = ) text*
+0 0 0 begincolor* % black
+1804 1431 1978 1431 1978 1432 1804 1432 box* %(1804, 1431)(174, 1)
+1804 1432 1805 1432 1805 1449 1804 1449 box* %(1804, 1432)(1, 17)
+/Courier 54 13 1819 1447 (stqe_next) text*
+/Courier 18 13 1873 1447 ( = ) text*
+0 0 0 begincolor* % black
+0.996109 0.996109 0.796887 begincolor* % #ffffcc
+1891 1434 1975 1434 1975 1447 1891 1447 box* %(1891, 1434)(84, 13)
+endcolor*
+0 0 0.545098 begincolor* % blue4
+/Courier 84 13 1891 1447 (0x7ffff7fe5000) text*
+endcolor*
+endcolor*
+1977 1432 1978 1432 1978 1449 1977 1449 box* %(1977, 1432)(1, 17)
+1804 1449 1978 1449 1978 1450 1804 1450 box* %(1804, 1449)(174, 1)
+endcolor*
+/Courier 48 13 1720 1472 (se_splay) text*
+/Courier 18 13 1786 1472 ( = ) text*
+0 0 0 begincolor* % black
+1804 1450 1978 1450 1978 1451 1804 1451 box* %(1804, 1450)(174, 1)
+1804 1451 1805 1451 1805 1481 1804 1481 box* %(1804, 1451)(1, 30)
+/Courier 48 13 1819 1466 (spe_left) text*
+/Courier 18 13 1873 1466 ( = ) text*
+0 0 0.545098 begincolor* % blue4
+1 0 0 begincolor* % red
+/Courier 18 13 1891 1466 (0x0) text*
+endcolor*
+endcolor*
+/Courier 54 13 1819 1479 (spe_right) text*
+/Courier 18 13 1873 1479 ( = ) text*
+0 0 0.545098 begincolor* % blue4
+/Courier 84 13 1891 1479 (0x7ffff7fea000) text*
+endcolor*
+1977 1451 1978 1451 1978 1481 1977 1481 box* %(1977, 1451)(1, 30)
+1804 1481 1978 1481 1978 1482 1804 1482 box* %(1804, 1481)(174, 1)
+endcolor*
+1980 1339 1981 1339 1981 1484 1980 1484 box* %(1980, 1339)(1, 145)
+1705 1484 1981 1484 1981 1485 1705 1485 box* %(1705, 1484)(276, 1)
+endcolor*
+1983 1184 1984 1184 1984 1487 1983 1487 box* %(1983, 1184)(1, 303)
+1690 1487 1984 1487 1984 1488 1690 1488 box* %(1690, 1487)(294, 1)
+endcolor*
+1986 1181 1987 1181 1987 1490 1986 1490 box* %(1986, 1181)(1, 309)
+1597 1490 1987 1490 1987 1491 1597 1491 box* %(1597, 1490)(390, 1)
+endcolor*
+1989 1162 1990 1162 1990 1493 1989 1493 box* %(1989, 1162)(1, 331)
+1594 1493 1990 1493 1990 1494 1594 1494 box* %(1594, 1493)(396, 1)
+endcolor*
+0.745098 0.745098 0.745098 begincolor* % grey
+1990 1162 1991 1162 1991 1494 1990 1494 box* %(1990, 1162)(1, 332)
+endcolor*
+0.745098 0.745098 0.745098 begincolor* % grey
+1595 1494 1991 1494 1991 1495 1595 1495 box* %(1595, 1494)(396, 1)
+endcolor*
+1018 1081 1415 1081 1415 1415 1018 1415 clean*
+0 0 0 begincolor* % black
+1018 1081 1414 1081 1414 1082 1018 1082 box* %(1018, 1081)(396, 1)
+1018 1082 1019 1082 1019 1413 1018 1413 box* %(1018, 1082)(1, 331)
+0 0 0 begincolor* % black
+/Courier 12 13 1021 1097 (17) text*
+/Courier 12 13 1033 1097 (: ) text*
+/Courier-BoldOblique 120 13 1045 1097 (*\(\(\(\(\(CON...].maddr\)) text*
+endcolor*
+1021 1097 1411 1097 1411 1098 1021 1098 box* %(1021, 1097)(390, 1)
+0 0 0 begincolor* % black
+1021 1100 1411 1100 1411 1101 1021 1101 box* %(1021, 1100)(390, 1)
+1021 1101 1022 1101 1022 1410 1021 1410 box* %(1021, 1101)(1, 309)
+/Courier 60 13 1036 1262 (sb_entries) text*
+/Courier 18 13 1096 1262 ( = ) text*
+0 0 0.545098 begincolor* % blue4
+1114 1103 1408 1103 1408 1104 1114 1104 box* %(1114, 1103)(294, 1)
+1114 1104 1115 1104 1115 1407 1114 1407 box* %(1114, 1104)(1, 303)
+0 0 0 begincolor* % black
+1129 1106 1405 1106 1405 1107 1129 1107 box* %(1129, 1106)(276, 1)
+1129 1107 1130 1107 1130 1252 1129 1252 box* %(1129, 1107)(1, 145)
+/Courier 42 13 1144 1122 (se_size) text*
+/Courier 18 13 1210 1122 ( = ) text*
+0 0 0 begincolor* % black
+/Courier 24 13 1228 1122 (2056) text*
+endcolor*
+/Courier 60 13 1144 1144 (se_current) text*
+/Courier 18 13 1210 1144 ( = ) text*
+0 0 0 begincolor* % black
+1228 1122 1402 1122 1402 1123 1228 1123 box* %(1228, 1122)(174, 1)
+1228 1123 1229 1123 1229 1153 1228 1153 box* %(1228, 1123)(1, 30)
+/Courier 30 13 1243 1138 (maddr) text*
+/Courier 18 13 1273 1138 ( = ) text*
+0 0 0.545098 begincolor* % blue4
+/Courier 84 13 1291 1138 (0x7ffff7fe4000) text*
+endcolor*
+/Courier 30 13 1243 1151 (laddr) text*
+/Courier 18 13 1273 1151 ( = ) text*
+0 0 0 begincolor* % black
+/Courier 30 13 1291 1151 (77824) text*
+endcolor*
+1401 1123 1402 1123 1402 1153 1401 1153 box* %(1401, 1123)(1, 30)
+1228 1153 1402 1153 1402 1154 1228 1154 box* %(1228, 1153)(174, 1)
+endcolor*
+/Courier 66 13 1144 1176 (se_snapshot) text*
+/Courier 18 13 1210 1176 ( = ) text*
+0 0 0 begincolor* % black
+1228 1154 1402 1154 1402 1155 1228 1155 box* %(1228, 1154)(174, 1)
+1228 1155 1229 1155 1229 1185 1228 1185 box* %(1228, 1155)(1, 30)
+/Courier 30 13 1243 1170 (maddr) text*
+/Courier 18 13 1273 1170 ( = ) text*
+0 0 0.545098 begincolor* % blue4
+/Courier 84 13 1291 1170 (0x7ffff7fe4000) text*
+endcolor*
+/Courier 30 13 1243 1183 (laddr) text*
+/Courier 18 13 1273 1183 ( = ) text*
+0 0 0 begincolor* % black
+/Courier 30 13 1291 1183 (77824) text*
+endcolor*
+1401 1155 1402 1155 1402 1185 1401 1185 box* %(1401, 1155)(1, 30)
+1228 1185 1402 1185 1402 1186 1228 1186 box* %(1228, 1185)(174, 1)
+endcolor*
+/Courier 54 13 1144 1199 (se_bitmap) text*
+/Courier 18 13 1210 1199 ( = ) text*
+0 0 0 begincolor* % black
+/Courier 36 13 1228 1199 (\"\\001\") text*
+endcolor*
+/Courier 42 13 1144 1215 (se_list) text*
+/Courier 18 13 1210 1215 ( = ) text*
+0 0 0 begincolor* % black
+1228 1199 1402 1199 1402 1200 1228 1200 box* %(1228, 1199)(174, 1)
+1228 1200 1229 1200 1229 1217 1228 1217 box* %(1228, 1200)(1, 17)
+/Courier 54 13 1243 1215 (stqe_next) text*
+/Courier 18 13 1297 1215 ( = ) text*
+0 0 0.545098 begincolor* % blue4
+1 0 0 begincolor* % red
+/Courier 18 13 1315 1215 (0x0) text*
+endcolor*
+endcolor*
+1401 1200 1402 1200 1402 1217 1401 1217 box* %(1401, 1200)(1, 17)
+1228 1217 1402 1217 1402 1218 1228 1218 box* %(1228, 1217)(174, 1)
+endcolor*
+/Courier 48 13 1144 1240 (se_splay) text*
+/Courier 18 13 1210 1240 ( = ) text*
+0 0 0 begincolor* % black
+1228 1218 1402 1218 1402 1219 1228 1219 box* %(1228, 1218)(174, 1)
+1228 1219 1229 1219 1229 1249 1228 1249 box* %(1228, 1219)(1, 30)
+/Courier 48 13 1243 1234 (spe_left) text*
+/Courier 18 13 1297 1234 ( = ) text*
+0 0 0.545098 begincolor* % blue4
+1 0 0 begincolor* % red
+/Courier 18 13 1315 1234 (0x0) text*
+endcolor*
+endcolor*
+/Courier 54 13 1243 1247 (spe_right) text*
+/Courier 18 13 1297 1247 ( = ) text*
+0 0 0.545098 begincolor* % blue4
+/Courier 84 13 1315 1247 (0x7ffff7fea048) text*
+endcolor*
+1401 1219 1402 1219 1402 1249 1401 1249 box* %(1401, 1219)(1, 30)
+1228 1249 1402 1249 1402 1250 1228 1250 box* %(1228, 1249)(174, 1)
+endcolor*
+1404 1107 1405 1107 1405 1252 1404 1252 box* %(1404, 1107)(1, 145)
+1129 1252 1405 1252 1405 1253 1129 1253 box* %(1129, 1252)(276, 1)
+endcolor*
+1129 1255 1405 1255 1405 1256 1129 1256 box* %(1129, 1255)(276, 1)
+0 0 0 begincolor* % black
+1129 1258 1405 1258 1405 1259 1129 1259 box* %(1129, 1258)(276, 1)
+1129 1259 1130 1259 1130 1404 1129 1404 box* %(1129, 1259)(1, 145)
+/Courier 42 13 1144 1274 (se_size) text*
+/Courier 18 13 1210 1274 ( = ) text*
+0 0 0 begincolor* % black
+/Courier 6 13 1228 1274 (0) text*
+endcolor*
+/Courier 60 13 1144 1296 (se_current) text*
+/Courier 18 13 1210 1296 ( = ) text*
+0 0 0 begincolor* % black
+1228 1274 1402 1274 1402 1275 1228 1275 box* %(1228, 1274)(174, 1)
+1228 1275 1229 1275 1229 1305 1228 1305 box* %(1228, 1275)(1, 30)
+/Courier 30 13 1243 1290 (maddr) text*
+/Courier 18 13 1273 1290 ( = ) text*
+0 0 0.545098 begincolor* % blue4
+1 0 0 begincolor* % red
+/Courier 18 13 1291 1290 (0x0) text*
+endcolor*
+endcolor*
+/Courier 30 13 1243 1303 (laddr) text*
+/Courier 18 13 1273 1303 ( = ) text*
+0 0 0 begincolor* % black
+/Courier 6 13 1291 1303 (0) text*
+endcolor*
+1401 1275 1402 1275 1402 1305 1401 1305 box* %(1401, 1275)(1, 30)
+1228 1305 1402 1305 1402 1306 1228 1306 box* %(1228, 1305)(174, 1)
+endcolor*
+/Courier 66 13 1144 1328 (se_snapshot) text*
+/Courier 18 13 1210 1328 ( = ) text*
+0 0 0 begincolor* % black
+1228 1306 1402 1306 1402 1307 1228 1307 box* %(1228, 1306)(174, 1)
+1228 1307 1229 1307 1229 1337 1228 1337 box* %(1228, 1307)(1, 30)
+/Courier 30 13 1243 1322 (maddr) text*
+/Courier 18 13 1273 1322 ( = ) text*
+0 0 0.545098 begincolor* % blue4
+1 0 0 begincolor* % red
+/Courier 18 13 1291 1322 (0x0) text*
+endcolor*
+endcolor*
+/Courier 30 13 1243 1335 (laddr) text*
+/Courier 18 13 1273 1335 ( = ) text*
+0 0 0 begincolor* % black
+/Courier 6 13 1291 1335 (0) text*
+endcolor*
+1401 1307 1402 1307 1402 1337 1401 1337 box* %(1401, 1307)(1, 30)
+1228 1337 1402 1337 1402 1338 1228 1338 box* %(1228, 1337)(174, 1)
+endcolor*
+/Courier 54 13 1144 1351 (se_bitmap) text*
+/Courier 18 13 1210 1351 ( = ) text*
+0 0 0 begincolor* % black
+/Courier 12 13 1228 1351 (\"\") text*
+endcolor*
+/Courier 42 13 1144 1367 (se_list) text*
+/Courier 18 13 1210 1367 ( = ) text*
+0 0 0 begincolor* % black
+1228 1351 1402 1351 1402 1352 1228 1352 box* %(1228, 1351)(174, 1)
+1228 1352 1229 1352 1229 1369 1228 1369 box* %(1228, 1352)(1, 17)
+/Courier 54 13 1243 1367 (stqe_next) text*
+/Courier 18 13 1297 1367 ( = ) text*
+0 0 0.545098 begincolor* % blue4
+1 0 0 begincolor* % red
+/Courier 18 13 1315 1367 (0x0) text*
+endcolor*
+endcolor*
+1401 1352 1402 1352 1402 1369 1401 1369 box* %(1401, 1352)(1, 17)
+1228 1369 1402 1369 1402 1370 1228 1370 box* %(1228, 1369)(174, 1)
+endcolor*
+/Courier 48 13 1144 1392 (se_splay) text*
+/Courier 18 13 1210 1392 ( = ) text*
+0 0 0 begincolor* % black
+1228 1370 1402 1370 1402 1371 1228 1371 box* %(1228, 1370)(174, 1)
+1228 1371 1229 1371 1229 1401 1228 1401 box* %(1228, 1371)(1, 30)
+/Courier 48 13 1243 1386 (spe_left) text*
+/Courier 18 13 1297 1386 ( = ) text*
+0 0 0.545098 begincolor* % blue4
+1 0 0 begincolor* % red
+/Courier 18 13 1315 1386 (0x0) text*
+endcolor*
+endcolor*
+/Courier 54 13 1243 1399 (spe_right) text*
+/Courier 18 13 1297 1399 ( = ) text*
+0 0 0.545098 begincolor* % blue4
+1 0 0 begincolor* % red
+/Courier 18 13 1315 1399 (0x0) text*
+endcolor*
+endcolor*
+1401 1371 1402 1371 1402 1401 1401 1401 box* %(1401, 1371)(1, 30)
+1228 1401 1402 1401 1402 1402 1228 1402 box* %(1228, 1401)(174, 1)
+endcolor*
+1404 1259 1405 1259 1405 1404 1404 1404 box* %(1404, 1259)(1, 145)
+1129 1404 1405 1404 1405 1405 1129 1405 box* %(1129, 1404)(276, 1)
+endcolor*
+1407 1104 1408 1104 1408 1407 1407 1407 box* %(1407, 1104)(1, 303)
+1114 1407 1408 1407 1408 1408 1114 1408 box* %(1114, 1407)(294, 1)
+endcolor*
+1410 1101 1411 1101 1411 1410 1410 1410 box* %(1410, 1101)(1, 309)
+1021 1410 1411 1410 1411 1411 1021 1411 box* %(1021, 1410)(390, 1)
+endcolor*
+1413 1082 1414 1082 1414 1413 1413 1413 box* %(1413, 1082)(1, 331)
+1018 1413 1414 1413 1414 1414 1018 1414 box* %(1018, 1413)(396, 1)
+endcolor*
+0.745098 0.745098 0.745098 begincolor* % grey
+1414 1082 1415 1082 1415 1414 1414 1414 box* %(1414, 1082)(1, 332)
+endcolor*
+0.745098 0.745098 0.745098 begincolor* % grey
+1019 1414 1415 1414 1415 1415 1019 1415 box* %(1019, 1414)(396, 1)
+endcolor*
+endcolor*
+%%Trailer
+
+% $Id$
+% Trailer for DDD PostScript Box output
+
+grestore
+showpage
+end		% of ddddict 

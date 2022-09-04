@@ -1,0 +1,25 @@
+#!/usr/bin/env gnuplot
+
+set terminal postscript eps enhanced color font 'Helvetica,22'
+set output 'cpoint_overhead.eps'
+
+#set terminal svg size 350,262 fname 'Verdana' fsize 10
+#set output 'cpoint_overhead.svg'
+
+#set title "container consistency-point overhead"
+
+unset key
+set style data histogram
+# Give the bars a plain fill pattern, and draw a solid line around them.
+set style fill solid border
+# We need to set lw in order for error bars to actually appear.
+set style histogram errorbars linewidth 1
+# Make the bars semi-transparent so that the errorbars are easier to see.
+set style fill solid 0.3
+set bars front
+
+set yrange [0:3]
+
+set ylabel 'Execution Time (seconds)'
+plot "cpoint_overhead_clean.txt" using 3:2:4:xticlabels(1) linewidth 2 lc rgb '#A9A9A9'
+

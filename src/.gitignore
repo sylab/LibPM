@@ -1,0 +1,10 @@
+# binary files
+*.o
+*.so
+*.a
+
+# vim temp files
+*.~
+
+# cscope files
+cscope.*
